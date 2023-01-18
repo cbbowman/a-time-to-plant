@@ -3,7 +3,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import reverse_lazy
 from django.views import generic
-from .forms import NewUserForm
+from .forms import NewPlanterForm
 
 
 class Home(generic.base.TemplateView):
@@ -12,7 +12,7 @@ class Home(generic.base.TemplateView):
 
 class Register(generic.CreateView):
     title = 'Register'
-    form_class = NewUserForm
+    form_class = NewPlanterForm
     success_url = reverse_lazy('home')
     template_name = 'users/register.html'
 
@@ -29,20 +29,22 @@ class Authenticate(LoginView):
 class Deauthenticate(LogoutView):
     next_page = reverse_lazy('home')
 
+
 class AuthReset(PasswordResetView):
-    template_name = 'users/auth-reset-form.html'
+    template_name = 'users/auth_reset_form.html'
+    email_template_name = 'users/reset_email.html'
+    success_url = reverse_lazy('auth-reset-done')
 
 
 class AuthResetConfirm(PasswordResetConfirmView):
-    pass
+    template_name = 'users/auth_reset_confirm.html'
 
 
 class AuthResetComplete(PasswordResetCompleteView):
     pass
 
-
 class AuthResetDone(PasswordResetDoneView):
-    pass
+    template_name = 'users/auth_reset_done.html'
 
 
 class PassChange(PasswordChangeView):
