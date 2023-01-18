@@ -1,10 +1,24 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h2>Register</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<main class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Register</h2>
+            <div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h2>Already Registered?</h2>
+            <a class="btn btn-warning" href="{% url 'auth-reset' %}">Log In</a>
+        </div>
+    </div>
+</main>
+<div>
+</div>
 {% endblock content %}

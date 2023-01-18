@@ -4,16 +4,16 @@
 <main role="main" class="container">
     <div class="row">
         <div class="col-md-8">
-            <h2>Log In</h2>
+            <h2>Reset Password</h2>
             <form method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
-                <button type="submit" class="btn btn-primary">Sign In</button>
+                <button type="submit" class="btn btn-warning">Reset</button>
             </form>
         </div>
         <div class="col-md-4">
-            <h2>Forgot password?</h2>
-            <a class="btn btn-warning" href="{% url 'auth-reset' %}">Reset</a>
+            <p>Already have an account?</p>
+            <a class="btn btn-warning" href="{% url 'auth' %}">Log In</a>
         </div>
     </div>
 </main>
