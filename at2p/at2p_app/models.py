@@ -1,9 +1,35 @@
+from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.db import models 
 from django_countries.fields import CountryField
+from . import country_codes
+from .scrape import historic_temp, forecast_high, forecast_low
 
-COUNTRIES_ONLY = ['AD', 'AR', 'AS', 'AT', 'AU', 'AX', 'AZ', 'BD', 'BE', 'BG', 'BM', 'BR', 'BY', 'CA', 'CH', 'CL', 'CO', 'CR', 'CY', 'CZ', 'DE', 'DK', 'DO', 'DZ', 'EE', 'ES', 'FI', 'FM', 'FO', 'FR', 'GB', 'GF', 'GG', 'GL', 'GP', 'GT', 'GU', 'HR', 'HT', 'HU', 'IE', 'IM', 'IN', 'IS', 'IT', 'JE', 'JP', 'KR', 'LI', 'LK', 'LT', 'LU', 'LV', 'MC', 'MD', 'MH', 'MK', 'MP', 'MQ', 'MT', 'MW', 'MX', 'MY', 'NC', 'NL', 'NO', 'NZ', 'PE', 'PH', 'PK', 'PL', 'PM', 'PR', 'PT', 'PW', 'RE', 'RO', 'RS', 'RU', 'SE', 'SG', 'SI', 'SJ', 'SK', 'SM', 'TH', 'TR', 'UA', 'US', 'UY', 'VA', 'VI', 'WF', 'YT', 'ZA']
+COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
 
 class Planter(AbstractUser):
     country = CountryField(default='US')
     zip = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.username
+
+class WeatherInfo(models.Model):
+    historic_avg_temp = models.SmallIntegerField(blank=True, null=True)
+    forecast_high_temp = models.SmallIntegerField(blank=True, null=True)
+    forecast_low_temp = models.SmallIntegerField(blank=True, null=True)
+    country = CountryField(default='US')
+    zip = models.CharField(max_length=10, blank=True, null=True)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.historic_avg_temp = 0
+        self.forecast_high_temp = 1
+        self.forecast_low_temp = 2
+        super().__init__(*args, **kwargs)
+
+    def update_weather(self):
+        self.historic_avg_temp = historic_temp(self.zip, self.country.code)
+        self.forecast_high_temp = forecast_high(self.zip, self.country.code)
+        self.forecast_low_temp = forecast_low(self.zip, self.country.code)
+        self.save()
+

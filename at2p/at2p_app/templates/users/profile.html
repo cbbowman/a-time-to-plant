@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ planter.username }}</h2>
-<a href="{% url 'profile-edit' %}">Edit Profile</a>
-<p>Country: {{ planter.country }}</p>
-<p>Zip Code: {{ planter.zip }}</p>
-<p>Email: {{ planter.email }}</p>
+
+<main class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>{{ planter }}</h2>
+            <a href="{% url 'profile-edit' %}">Edit Profile</a>
+            <p>Country: {{ planter.country }}</p>
+            <p>Zip Code: {{ planter.zip }}</p>
+            <p>Email: {{ planter.email }}</p>
+        </div>
+        <div class="col-md-4">
+            <h2>Weather</h2>
+            <p>Soil Temp: {{ soil }} &#8457;</p>
+            <p>Forecast High: {{ high }} &#8457;</p>
+            <p>Forecast Low: {{ low }} &#8457;</p>
+        </div>
+    </div>
+</main>
+
+
+
 {% endblock content %}
