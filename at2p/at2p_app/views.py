@@ -16,15 +16,17 @@ class Profile(generic.DetailView, LoginRequiredMixin):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         planter = self.model.objects.get(pk=self.request.user.id)
-        if not WeatherInfo.objects.filter(country=planter.country, zip=planter.zip).exists():
-            WeatherInfo.objects.create(
+        if planter.zip is not None:
+            if not WeatherInfo.objects.filter(country=planter.country, zip=planter.zip).exists():
+                WeatherInfo.objects.create(
+                    country=planter.country, zip=planter.zip)
+            w = WeatherInfo.objects.get(
                 country=planter.country, zip=planter.zip)
-        w = WeatherInfo.objects.get(
-            country=planter.country, zip=planter.zip)
-        w.update_weather()
-        context['soil'] = w.historic_avg_temp
-        context['high'] = w.forecast_high_temp
-        context['low'] = w.forecast_low_temp
+            w.clean()
+            w.update_weather()
+            context['soil'] = w.historic_avg_temp
+            context['high'] = w.forecast_high_temp
+            context['low'] = w.forecast_low_temp
         return context
 
     def get_object(self) -> models.Model:
