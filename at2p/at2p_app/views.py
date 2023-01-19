@@ -6,14 +6,12 @@ from django.views import generic
 from .forms import NewPlanterForm, ProfileForm
 from .models import Planter, WeatherInfo, models
 from django.contrib.auth.mixins import LoginRequiredMixin
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class Profile(generic.DetailView, LoginRequiredMixin):
     model = Planter
     template_name = 'users/profile.html'
-    context_object_name = 'planter'
-    query_pk_and_slug = False
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
