@@ -10,6 +10,7 @@ requests = "~=2.28"
 pgeocode = "~=0.4"
 django-crispy-forms = "~=1.14"
 lxml = "~=4.9"
+django-countries = "~=7.5"
 
 [dev-packages]
 selenium = "~=4.7"

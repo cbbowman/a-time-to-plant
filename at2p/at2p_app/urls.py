@@ -1,8 +1,10 @@
 from django.urls import path
-from at2p_app.views import Home, Register, Authenticate, Deauthenticate, AuthReset, AuthResetConfirm, AuthResetComplete, AuthResetDone, PassChange, PassChangeDone
+from at2p_app.views import Profile, ProfileEdit, Home, Register, Authenticate, Deauthenticate, AuthReset, AuthResetConfirm, AuthResetComplete, AuthResetDone, PassChange, PassChangeDone
 
 
 urlpatterns = [
+    path('profile', Profile.as_view(), name='profile'),
+    path('profile/edit', ProfileEdit.as_view(), name='profile-edit'),
     path('home', Home.as_view(), name='home'),
     path('register', Register.as_view(), name='register'),
     path('auth', Authenticate.as_view(), name='auth'),
