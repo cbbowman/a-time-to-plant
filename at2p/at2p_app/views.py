@@ -10,9 +10,26 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth.views import PasswordResetDoneView
 from django.contrib.auth.views import PasswordResetCompleteView
 from django.urls import reverse_lazy
+from django.utils.text import slugify
 from django.views import generic
-from .forms import NewPlanterForm, ProfileForm
+from .forms import NewPlanterForm, ProfileForm, NewCropForm
 from .models import TimeToPlant, Crop, Planter, WeatherInfo
+
+
+class CropView(generic.DetailView):
+    model = Crop
+    template_name = 'crop_detail.html'
+
+    # def get_object(self) -> model:
+    #     planter = Crop.objects.get()
+    #     return planter
+
+
+class CropAdd(generic.CreateView):
+    title = 'New Crop'
+    form_class = NewCropForm
+    success_url = reverse_lazy('home')
+    template_name = 'crop_create_form.html'
 
 
 class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
@@ -29,6 +46,7 @@ class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
                         min_opt_temp=row[2],
                         max_opt_temp=row[3],
                         max_temp=row[4],
+                        slug=slugify(row[0])
                     )
         return super().setup(request, *args, **kwargs)
 

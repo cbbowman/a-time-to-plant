@@ -1,11 +1,13 @@
 from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.text import slugify
 from django_countries.fields import CountryField
 from . import country_codes
 from .scrape import historic_temp, forecast_high_low
 from django.core.exceptions import ValidationError
 import pgeocode
+from django.urls import reverse_lazy
 
 
 COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
@@ -18,12 +20,19 @@ class Crop(models.Model):
     min_opt_temp = models.SmallIntegerField()
     max_opt_temp = models.SmallIntegerField()
     max_temp = models.SmallIntegerField()
+    slug = models.SlugField(null=True)
+
+    class Meta():
+        ordering = ['name']
 
     def __str__(self) -> str:
         return str(self.name)
 
     def __repr__(self) -> str:
         return str(self.name)
+
+    def get_absolute_url(self):
+        return reverse_lazy('crop-detail', kwargs={'slug': self.slug})
 
 
 class Planter(AbstractUser):

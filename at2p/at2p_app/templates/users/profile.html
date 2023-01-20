@@ -38,7 +38,9 @@
                 <tbody>
                     {% for planting in plantings %}
                         <tr>
-                            <th scope="row">{{ planting.crop.name }}</th>
+                            <th scope="row">
+                                <a href="{{ planting.crop.get_absolute_url }}">{{ planting.crop.name }}</a>
+                            </th>
                             <td>{{ planting.crop.min_temp }}</td>
                             <td>{{ planting.crop.min_opt_temp }} - {{ planting.crop.max_opt_temp }}</td>
                             <td>{{ planting.crop.max_temp }}</td>

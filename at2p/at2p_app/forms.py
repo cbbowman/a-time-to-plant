@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import EmailField, ModelForm
-from .models import Planter
+from .models import Planter, Crop
 import pgeocode
 from django.core.exceptions import ValidationError
 from django_countries.widgets import CountrySelectWidget
@@ -10,6 +10,14 @@ from django_countries import countries
 
 COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
 COUNTRIES_FIRST = ['US']
+
+
+class NewCropForm(ModelForm):
+    class Meta:
+        model = Crop
+        fields = ('name', 'min_temp', 'min_opt_temp',
+                  'max_opt_temp', 'max_temp', 'slug')
+        widgets = {'country': CountrySelectWidget()}
 
 
 class NewPlanterForm(UserCreationForm):
@@ -28,7 +36,8 @@ class ProfileForm(ModelForm):
 
     def clean(self) -> None:
         n = pgeocode.Nominatim(self.data['country'])
-        if self.data['country'] == n.query_postal_code(self.data['zip']).country_code:
+        country = n.query_postal_code(self.data['zip']).country_code
+        if self.data['country'] == country:
             return
         else:
             raise ValidationError(
