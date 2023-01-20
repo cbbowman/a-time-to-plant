@@ -18,7 +18,7 @@ from .models import TimeToPlant, Crop, Planter, WeatherInfo
 
 class CropView(generic.DetailView):
     model = Crop
-    template_name = 'crop_detail.html'
+    template_name = 'crops/crop_detail.html'
 
     # def get_object(self) -> model:
     #     planter = Crop.objects.get()
@@ -29,7 +29,7 @@ class CropAdd(generic.CreateView):
     title = 'New Crop'
     form_class = NewCropForm
     success_url = reverse_lazy('home')
-    template_name = 'crop_create_form.html'
+    template_name = 'crops/crop_create_form.html'
 
 
 class CropDelete(generic.DeleteView):
@@ -71,7 +71,7 @@ class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
 class Profile(generic.DetailView, LoginRequiredMixin):
     login_url = reverse_lazy('auth')
     model = Planter
-    template_name = 'users/profile.html'
+    template_name = 'core/profile.html'
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -106,7 +106,7 @@ class Profile(generic.DetailView, LoginRequiredMixin):
 
 class ProfileEdit(generic.UpdateView, LoginRequiredMixin):
     model = Planter
-    template_name = 'users/profile_edit.html'
+    template_name = 'core/profile_edit.html'
     form_class = ProfileForm
     success_url = reverse_lazy('profile')
 
@@ -115,7 +115,7 @@ class ProfileEdit(generic.UpdateView, LoginRequiredMixin):
 
 
 class Home(generic.base.TemplateView):
-    template_name = 'home.html'
+    template_name = 'core/home.html'
 
 
 class Register(generic.CreateView):
