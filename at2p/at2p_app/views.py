@@ -32,6 +32,16 @@ class CropAdd(generic.CreateView):
     template_name = 'crop_create_form.html'
 
 
+class CropDelete(generic.DeleteView):
+    model = Crop
+    title = 'Delete Crop'
+    success_url = reverse_lazy('home')
+    template_name = 'crop_confirm_delete.html'
+
+    # def get_success_url(self, *args, **kwargs):
+    #     return reverse_lazy('crop-delete', args=[self.kwargs['slug']])
+
+
 class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
 
     def setup(self, request, *args: Any, **kwargs: Any) -> None:

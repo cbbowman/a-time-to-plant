@@ -1,12 +1,14 @@
 from django.urls import path
 from at2p_app.views import Home, Register, Authenticate, Deauthenticate
 from at2p_app.views import Profile, ProfileEdit
-from at2p_app.views import ImportCrops, CropAdd, CropView
+from at2p_app.views import ImportCrops, CropAdd, CropView, CropDelete
 from at2p_app.views import AuthReset, AuthResetConfirm, AuthResetComplete
 from at2p_app.views import AuthResetDone, PassChange, PassChangeDone
 
 
 urlpatterns = [
+    path('crop/new', CropAdd.as_view(), name='crop-new'),
+    path('crop/<slug>/delete', CropDelete.as_view(), name='crop-delete'),
     path('crop/<slug:slug>', CropView.as_view(), name='crop-detail'),
     path('import', ImportCrops.as_view(), name='load-crops'),
     path('crop/new', CropAdd.as_view(), name='crop-add'),

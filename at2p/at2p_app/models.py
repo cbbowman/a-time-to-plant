@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
@@ -8,6 +8,7 @@ from .scrape import historic_temp, forecast_high_low
 from django.core.exceptions import ValidationError
 import pgeocode
 from django.urls import reverse_lazy
+from math import exp
 
 
 COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
@@ -15,12 +16,16 @@ COUNTRIES_FIRST = ['US']
 
 
 class Crop(models.Model):
-    name = models.CharField(max_length=50)
-    min_temp = models.SmallIntegerField()
-    min_opt_temp = models.SmallIntegerField()
-    max_opt_temp = models.SmallIntegerField()
-    max_temp = models.SmallIntegerField()
+    name = models.CharField('Name', max_length=50)
+    min_temp = models.SmallIntegerField('Minimum Temperature')
+    min_opt_temp = models.SmallIntegerField('Optimum Lower Temperature')
+    max_opt_temp = models.SmallIntegerField('Optimum Upper Temperature')
+    max_temp = models.SmallIntegerField('Maximum Temperature')
     slug = models.SlugField(null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        return super().save(*args, **kwargs)
 
     class Meta():
         ordering = ['name']
@@ -85,20 +90,16 @@ class TimeToPlant(models.Model):
         high = w.forecast_high_temp
         soil = w.historic_avg_temp
 
-        chill = (low - mn) / max((ol - mn), 1)
-        cook = (mx - high) / max((mx - oh), 1)
-        sl = min(soil - ol, oh - soil) / ((oh - ol) / 2)
-        score = min(chill, cook, sl)
+        chill = max((mn - low), 0) / max((ol - mn), 1)
+        cook = max((high - mx), 0) / max((mx - oh), 1)
+        sl = max(max(soil - oh, 0), max(ol - soil, 0)) / (oh - ol)
+        score = exp(-max(chill, cook, sl))
 
         self.chill = chill
         self.cook = cook
         self.soil = sl
         self.plantable_score = score
-        soil_ok = (self.crop.max_opt_temp > w.historic_avg_temp) \
-            and (self.crop.min_opt_temp < w.historic_avg_temp)
-        high_ok = self.crop.max_temp > w.forecast_high_temp
-        low_ok = self.crop.min_temp < w.forecast_low_temp
-        self.plantable = soil_ok and high_ok and low_ok
+        self.plantable = score == 1
         self.save()
 
 

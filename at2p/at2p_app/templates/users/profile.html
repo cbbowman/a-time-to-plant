@@ -23,47 +23,35 @@
                     <tr>
                         <th rowspan="2">Crop</th>
                         <th colspan="3">Temperature</th>
-                        <th colspan="4">Plantable</th>
+                        <!-- <th colspan="4">Plantable</th> -->
                     </tr>
                     <tr>
                         <th scope="col">Min</th>
                         <th scope="col">Best</th>
                         <th scope="col">Max</th>
-                        <th scope="col">Chill</th>
+                        <!-- <th scope="col">Chill</th>
                         <th scope="col">Cook</th>
                         <th scope="col">Soil</th>
-                        <th scope="col">Score</th>
+                        <th scope="col">Score</th> -->
                     </tr>
                 </header>
                 <tbody>
                     {% for planting in plantings %}
-                        <tr>
+                    {% if planting.plantable %}
+                    <tr class="table-success">
+                    {% else %}
+                    <tr class="table-danger">
+                    {% endif %}
                             <th scope="row">
                                 <a href="{{ planting.crop.get_absolute_url }}">{{ planting.crop.name }}</a>
                             </th>
                             <td>{{ planting.crop.min_temp }}</td>
                             <td>{{ planting.crop.min_opt_temp }} - {{ planting.crop.max_opt_temp }}</td>
                             <td>{{ planting.crop.max_temp }}</td>
-                            {% if planting.chill > 0 %}
-                            <td class="table-success">{{ planting.chill|floatformat:2 }}</td>
-                            {% else %}
-                            <td class="table-danger">{{ planting.chill|floatformat:2 }}</td>
-                            {% endif %}
-                            {% if planting.cook > 0 %}
-                            <td class="table-success">{{ planting.cook|floatformat:2 }}</td>
-                            {% else %}
-                            <td class="table-danger">{{ planting.cook|floatformat:2 }}</td>
-                            {% endif %}
-                            {% if planting.soil > 0 %}
-                            <td class="table-success">{{ planting.soil|floatformat:2 }}</td>
-                            {% else %}
-                            <td class="table-danger">{{ planting.soil|floatformat:2 }}</td>
-                            {% endif %}
-                            {% if planting.plantable_score > 0 %}
-                            <td class="table-success">{{ planting.plantable_score|floatformat:2 }}</td>
-                            {% else %}
-                            <td class="table-danger">{{ planting.plantable_score|floatformat:2 }}</td>
-                            {% endif %}
+                            <!-- <td>{{ planting.chill|floatformat:2 }}</td>
+                            <td>{{ planting.cook|floatformat:2 }}</td>
+                            <td>{{ planting.soil|floatformat:2 }}</td>
+                            <td>{{ planting.plantable_score|floatformat:2 }}</td> -->
                         </tr>
                     {% endfor %}
                 </tbody>

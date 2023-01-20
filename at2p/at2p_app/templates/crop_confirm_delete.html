@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<main class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">{% csrf_token %}
+                <p>Are you sure you want to delete "{{ crop }}"?</p>
+                {{ form|crispy }}
+                <input type="submit" value="Confirm">
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock content %}

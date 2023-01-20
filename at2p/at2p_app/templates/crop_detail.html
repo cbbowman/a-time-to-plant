@@ -4,6 +4,23 @@
     <div class="row">
         <div class="col-md-8">
             <h2>{{ crop.name }}</h2>
+            <p>edit</p>
+            <p><a href="{% url 'crop-delete' crop.slug %}">Delete</a></p>
+            <table class="table">
+                <tr>
+                    <th colspan="3">Temperature</th>
+                </tr>
+                <tr>
+                    <th>Minimum</th>
+                    <th>Optimum</th>
+                    <th>Maximum</th>
+                </tr>
+                <tr>
+                    <td>{{ crop.min_temp }} &#8457;</td>
+                    <td>{{ crop.min_opt_temp }} &ndash; {{ crop.max_opt_temp }} &#8457;</td>
+                    <td>{{crop.max_temp}} &#8457;</td>
+                </tr>
+            </table>
         </div>
     </div>
 </main>

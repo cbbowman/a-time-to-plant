@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import EmailField, ModelForm
+from django.forms import ModelMultipleChoiceField, CheckboxSelectMultiple
 from .models import Planter, Crop
 import pgeocode
 from django.core.exceptions import ValidationError
@@ -16,7 +17,7 @@ class NewCropForm(ModelForm):
     class Meta:
         model = Crop
         fields = ('name', 'min_temp', 'min_opt_temp',
-                  'max_opt_temp', 'max_temp', 'slug')
+                  'max_opt_temp', 'max_temp')
         widgets = {'country': CountrySelectWidget()}
 
 
@@ -29,6 +30,11 @@ class NewPlanterForm(UserCreationForm):
 
 
 class ProfileForm(ModelForm):
+    crops = ModelMultipleChoiceField(
+        queryset=Crop.objects.all(),
+        widget=CheckboxSelectMultiple,
+        required=True)
+
     class Meta:
         model = Planter
         fields = ('username', 'country', 'zip', 'crops')
