@@ -5,11 +5,11 @@ from .models import Planter, Crop
 import pgeocode
 from django.core.exceptions import ValidationError
 from django_countries.widgets import CountrySelectWidget
-from . import country_codes
+from .static import COUNTRIES_ONLY
 from django_countries import countries
 
 
-COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
+COUNTRIES_ONLY = COUNTRIES_ONLY
 COUNTRIES_FIRST = ['US']
 
 
@@ -33,7 +33,7 @@ class ProfileForm(ModelForm):
     crops = ModelMultipleChoiceField(
         queryset=Crop.objects.all(),
         widget=CheckboxSelectMultiple,
-        required=True)
+        required=False)
 
     class Meta:
         model = Planter

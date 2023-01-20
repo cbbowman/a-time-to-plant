@@ -47,10 +47,11 @@ class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
     def setup(self, request, *args: Any, **kwargs: Any) -> None:
         print(request.method)
         if request.method == 'POST':
-            with open('at2p_app/crops_and_temps.csv', encoding='UTF-8') as f:
+            with open('at2p_app/static/crops_and_temps.csv', encoding='UTF-8') as f:
                 reader = csv.reader(f)
                 for row in reader:
-                    _, created = Crop.objects.get_or_create(
+                    created = Crop.objects.get_or_create(
+                    # _, created = Crop.objects.get_or_create(
                         name=row[0],
                         min_temp=row[1],
                         min_opt_temp=row[2],

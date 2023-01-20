@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
 from django_countries.fields import CountryField
-from . import country_codes
+from .static import COUNTRIES_ONLY
 from .scrape import historic_temp, forecast_high_low
 from django.core.exceptions import ValidationError
 import pgeocode
@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from math import exp
 
 
-COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
+COUNTRIES_ONLY = COUNTRIES_ONLY
 COUNTRIES_FIRST = ['US']
 
 
