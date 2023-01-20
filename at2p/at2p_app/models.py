@@ -8,22 +8,37 @@ from django.core.exceptions import ValidationError
 import pgeocode
 
 
-# COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
+COUNTRIES_ONLY = country_codes.COUNTRIES_ONLY
 COUNTRIES_FIRST = ['US']
-COUNTRIES_ONLY = ['AD', 'AR', 'AS', 'AT', 'AU', 'AX', 'AZ', 'BD', 'BE', 'BG', 'BM',
-                  'BR', 'BY', 'CA', 'CH', 'CL', 'CO', 'CR', 'CY', 'CZ', 'DE', 'DK',
-                  'DO', 'DZ', 'EE', 'ES', 'FI', 'FM', 'FO', 'FR', 'GB', 'GF', 'GG',
-                  'GL', 'GP', 'GT', 'GU', 'HR', 'HT', 'HU', 'IE', 'IM', 'IN', 'IS',
-                  'IT', 'JE', 'JP', 'KR', 'LI', 'LK', 'LT', 'LU', 'LV', 'MC', 'MD',
-                  'MH', 'MK', 'MP', 'MQ', 'MT', 'MW', 'MX', 'MY', 'NC', 'NL', 'NO',
-                  'NZ', 'PE', 'PH', 'PK', 'PL', 'PM', 'PR', 'PT', 'PW', 'RE', 'RO',
-                  'RS', 'RU', 'SE', 'SG', 'SI', 'SJ', 'SK', 'SM', 'TH', 'TR', 'UA',
-                  'US', 'UY', 'VA', 'VI', 'WF', 'YT', 'ZA']
+# COUNTRIES_ONLY = ['AD', 'AR', 'AS', 'AT', 'AU', 'AX', 'AZ', 'BD', 'BE', 'BG', 'BM',
+#                   'BR', 'BY', 'CA', 'CH', 'CL', 'CO', 'CR', 'CY', 'CZ', 'DE', 'DK',
+#                   'DO', 'DZ', 'EE', 'ES', 'FI', 'FM', 'FO', 'FR', 'GB', 'GF', 'GG',
+#                   'GL', 'GP', 'GT', 'GU', 'HR', 'HT', 'HU', 'IE', 'IM', 'IN', 'IS',
+#                   'IT', 'JE', 'JP', 'KR', 'LI', 'LK', 'LT', 'LU', 'LV', 'MC', 'MD',
+#                   'MH', 'MK', 'MP', 'MQ', 'MT', 'MW', 'MX', 'MY', 'NC', 'NL', 'NO',
+#                   'NZ', 'PE', 'PH', 'PK', 'PL', 'PM', 'PR', 'PT', 'PW', 'RE', 'RO',
+#                   'RS', 'RU', 'SE', 'SG', 'SI', 'SJ', 'SK', 'SM', 'TH', 'TR', 'UA',
+#                   'US', 'UY', 'VA', 'VI', 'WF', 'YT', 'ZA']
+
+
+class Crop(models.Model):
+    name = models.CharField(max_length=50)
+    min_temp = models.SmallIntegerField()
+    min_opt_temp = models.SmallIntegerField()
+    max_opt_temp = models.SmallIntegerField()
+    max_temp = models.SmallIntegerField()
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return self.name
 
 
 class Planter(AbstractUser):
     country = CountryField(default='US')
     zip = models.CharField(max_length=10, blank=True, null=True)
+    crops = models.ManyToManyField(Crop, through='TimeToPlant')
 
     def clean(self) -> None:
         if self.zip is None:
@@ -37,6 +52,13 @@ class Planter(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+
+
+class TimeToPlant(models.Model):
+    planter = models.ForeignKey(Planter, on_delete=models.CASCADE)
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
+    plantable = models.BooleanField(default=False)
+    updated_on = models.DateTimeField(auto_now=True)
 
 
 class WeatherInfo(models.Model):

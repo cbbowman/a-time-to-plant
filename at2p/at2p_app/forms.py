@@ -23,7 +23,7 @@ class NewPlanterForm(UserCreationForm):
 class ProfileForm(ModelForm):
     class Meta:
         model = Planter
-        fields = ('username', 'country', 'zip')
+        fields = ('username', 'country', 'zip', 'crops')
         widgets = {'country': CountrySelectWidget()}
 
     def clean(self) -> None:

@@ -1,8 +1,9 @@
 from django.urls import path
-from at2p_app.views import Profile, ProfileEdit, Home, Register, Authenticate, Deauthenticate, AuthReset, AuthResetConfirm, AuthResetComplete, AuthResetDone, PassChange, PassChangeDone
+from at2p_app.views import ImportCrops, Profile, ProfileEdit, Home, Register, Authenticate, Deauthenticate, AuthReset, AuthResetConfirm, AuthResetComplete, AuthResetDone, PassChange, PassChangeDone
 
 
 urlpatterns = [
+    path('import', ImportCrops.as_view(), name='load-crops'),
     path('profile', Profile.as_view(), name='profile'),
     path('profile/edit', ProfileEdit.as_view(), name='profile-edit'),
     path('home', Home.as_view(), name='home'),

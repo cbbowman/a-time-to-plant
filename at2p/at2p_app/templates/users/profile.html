@@ -17,6 +17,39 @@
             <p>Forecast Low: {{ low }} &#8457;</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-bordered">
+                <header>
+                    <tr>
+                        <th rowspan="2">Crop</th>
+                        <th colspan="3">Temperature</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Min</th>
+                        <th scope="col">Best</th>
+                        <th scope="col">Max</th>
+                    </tr>
+                </header>
+                <tbody>
+                    {% for planting in plantings %}
+                        {% if planting.plantable %}
+                            <tr class="table-success">
+                        {% else %}
+                            <tr class="table-danger">
+                        {% endif %}
+                            <th scope="row">{{ planting.crop.name }}</th>
+                            <td>{{ planting.crop.min_temp }}</td>
+                            <td>{{ planting.crop.min_opt_temp }} - {{ planting.crop.max_opt_temp }}</td>
+                            <td>{{ planting.crop.max_temp }}</td>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
 </main>
 
 
