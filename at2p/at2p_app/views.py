@@ -1,13 +1,18 @@
+import csv
+from typing import Any, Dict, Optional
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeDoneView
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetDoneView
+from django.contrib.auth.views import PasswordResetCompleteView
 from django.urls import reverse_lazy
 from django.views import generic
 from .forms import NewPlanterForm, ProfileForm
-from .models import TimeToPlant, Crop, Planter, WeatherInfo, models
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from typing import Any, Dict, Optional
-import csv
+from .models import TimeToPlant, Crop, Planter, WeatherInfo
 
 
 class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
@@ -44,27 +49,29 @@ class Profile(generic.DetailView, LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         planter = self.model.objects.get(pk=self.request.user.id)
         context['title'] = planter
-        if planter.zip is not None:
-            if not WeatherInfo.objects.filter(country=planter.country, zip=planter.zip).exists():
-                WeatherInfo.objects.create(
-                    country=planter.country, zip=planter.zip)
-            w = WeatherInfo.objects.get(
+        if planter.zip is None:
+            return context
+
+        if not WeatherInfo.objects.filter(country=planter.country,
+                                          zip=planter.zip).exists():
+            WeatherInfo.objects.create(
                 country=planter.country, zip=planter.zip)
-            w.clean()
-            w.update_weather()
-            context['soil'] = w.historic_avg_temp
-            context['high'] = w.forecast_high_temp
-            context['low'] = w.forecast_low_temp
-            plantings = TimeToPlant.objects.filter(planter=planter.pk)
-            for planting in plantings:
-                soil_temp_ok = planting.crop.max_opt_temp > w.historic_avg_temp and planting.crop.min_opt_temp < w.historic_avg_temp
-                forecast_high_ok = planting.crop.max_temp < w.forecast_high_temp
-                forecast_low_ok = planting.crop.min_temp < w.forecast_low_temp
-                planting.plantable = soil_temp_ok and forecast_high_ok and forecast_low_ok
-            context['plantings'] = plantings
+        w = WeatherInfo.objects.get(
+            country=planter.country, zip=planter.zip)
+        w.clean()
+        w.update_weather()
+
+        plantings = TimeToPlant.objects.filter(planter=planter.pk)
+        for p in plantings:
+            p.update_plantable(w)
+
+        context['soil'] = w.historic_avg_temp
+        context['high'] = w.forecast_high_temp
+        context['low'] = w.forecast_low_temp
+        context['plantings'] = plantings.order_by('-plantable_score')
         return context
 
-    def get_object(self) -> models.Model:
+    def get_object(self) -> Planter:
         planter = Planter.objects.get(pk=self.request.user.id)
         return planter
 
@@ -75,7 +82,7 @@ class ProfileEdit(generic.UpdateView, LoginRequiredMixin):
     form_class = ProfileForm
     success_url = reverse_lazy('profile')
 
-    def get_object(self):
+    def get_object(self) -> Planter:
         return self.model.objects.get(pk=self.request.user.id)
 
 
