@@ -36,10 +36,7 @@ class CropDelete(generic.DeleteView):
     model = Crop
     title = 'Delete Crop'
     success_url = reverse_lazy('home')
-    template_name = 'crop_confirm_delete.html'
-
-    # def get_success_url(self, *args, **kwargs):
-    #     return reverse_lazy('crop-delete', args=[self.kwargs['slug']])
+    template_name = 'crops/crop_confirm_delete.html'
 
 
 class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
@@ -47,11 +44,11 @@ class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
     def setup(self, request, *args: Any, **kwargs: Any) -> None:
         print(request.method)
         if request.method == 'POST':
-            with open('at2p_app/static/crops_and_temps.csv', encoding='UTF-8') as f:
+            with open('at2p_app/static/crops_and_temps.csv',
+                      encoding='UTF-8') as f:
                 reader = csv.reader(f)
                 for row in reader:
                     created = Crop.objects.get_or_create(
-                    # _, created = Crop.objects.get_or_create(
                         name=row[0],
                         min_temp=row[1],
                         min_opt_temp=row[2],
