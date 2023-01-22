@@ -42,12 +42,12 @@ def get_soup(url):
     return soup
 
 
-def weather_url(lat: str, long: str, forecast_or_historic: str):
+def weather_url(lat, long, forecast_or_historic: str):
     url_prefix = 'https://www.timeanddate.com/weather/@'
     if forecast_or_historic == 'forecast':
-        return url_prefix + lat + ',' + long + '/ext'
+        return url_prefix + str(lat) + ',' + str(long) + '/ext'
     elif forecast_or_historic == 'historic':
-        return url_prefix + lat + ',' + long + '/historic'
+        return url_prefix + str(lat) + ',' + str(long) + '/historic'
     else:
         raise ValidationError(
             "weather_url called incorrectly")

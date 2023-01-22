@@ -53,19 +53,21 @@ class Planter(AbstractUser):
 
 
 class WeatherInfo(models.Model):
+    country = CountryField(default='US')
+    zip = models.CharField(max_length=10)
+    lat = models.DecimalField(max_digits=7, decimal_places=4, blank=True,
+                              null=True)
+    long = models.DecimalField(max_digits=7, decimal_places=4, blank=True,
+                               null=True)
     historic_avg_temp = models.SmallIntegerField(blank=True, null=True)
     forecast_high_temp = models.SmallIntegerField(blank=True, null=True)
     forecast_low_temp = models.SmallIntegerField(blank=True, null=True)
-    country = CountryField(default='US')
-    zip = models.CharField(max_length=10, blank=True, null=True)
-    lat = models.CharField(max_length=10, blank=True, null=True)
-    long = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.zip + ', ' + self.country
+        return self.zip + ', ' + self.country.code
 
     def __repr__(self) -> str:
-        return self.zip + ', ' + self.country
+        return self.zip + ', ' + self.country.code
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.historic_avg_temp = 0
@@ -75,14 +77,20 @@ class WeatherInfo(models.Model):
         self.long = 0
         super().__init__(*args, **kwargs)
 
-    def clean(self) -> None:
+    def set_lat_and_long(self):
         n = pgeocode.Nominatim(self.country.code)
         place = n.query_postal_code(self.zip)
-        self.lat = str(place.latitude)
-        self.long = str(place.longitude)
+        self.lat = float(place.latitude)
+        self.long = float(place.longitude)
+        self.save()
+        return
+
+    def clean(self) -> None:
+        self.set_lat_and_long()
         return super().clean()
 
     def update_weather(self):
+        self.clean()
         self.historic_avg_temp = historic_temp(self.lat, self.long)
         forecast = forecast_high_low(self.lat, self.long)
         self.forecast_high_temp = forecast[0]
