@@ -28,7 +28,7 @@ class Crop:
         self, name: str, abs_temp: TempRange, opt_temp: TempRange
     ) -> None:
         self.check_values(name, abs_temp, opt_temp)
-        self.name = name
+        self.name = str(name)
         self.abs_temp = abs_temp
         self.opt_temp = opt_temp
 
@@ -43,6 +43,14 @@ class Crop:
         self.check_temp_ranges(abs_temp, opt_temp)
         return
 
+    def check_name(self, name: str) -> None:
+        error_msg = "Name may not be blank or none!"
+        name_is_blank = name == ""
+        name_is_none = name is None
+        if name_is_none or name_is_blank:
+            raise ValueError(error_msg)
+        return
+
     def check_temp_ranges(
         self, abs_temp: TempRange, opt_temp: TempRange
     ) -> None:
@@ -51,14 +59,6 @@ class Crop:
         max_wrong = abs_temp.maximum < opt_temp.maximum
         opt_not_within_abs = min_wrong or max_wrong
         if opt_not_within_abs:
-            raise ValueError(error_msg)
-        return
-
-    def check_name(self, name: str) -> None:
-        error_msg = "Name may not be blank or none!"
-        name_is_blank = name == ""
-        name_is_none = name == None
-        if name_is_none or name_is_blank:
             raise ValueError(error_msg)
         return
 
@@ -85,6 +85,10 @@ class Country:
         name_is_string = type(full_name) == str
         if not name_is_string:
             raise ValueError(error_msg)
+
+        error_msg = "Country name must not be blank"
+        if len(full_name) == 0:
+            raise ValueError(error_msg)
         return
 
     def check_code(self, code: str) -> None:
@@ -101,9 +105,6 @@ class Country:
 
 
 class LatLong:
-    lat: float
-    long: float
-
     def __init__(self, lat: float, long: float) -> None:
         self.check_values(lat, long)
         self.lat = float(lat)
@@ -123,10 +124,8 @@ class LatLong:
 
     def check_lat(self, lat: float) -> None:
         error_msg = "Latitude must be a number between -90 and 90"
-        if self.is_a_number(lat):
+        if not self.is_a_number(lat):
             raise ValueError(error_msg)
-        print(lat < 90)
-        print(lat > -90)
         lat_ok = lat < 90 and lat > -90
         if not lat_ok:
             raise ValueError(error_msg)
@@ -134,25 +133,68 @@ class LatLong:
 
     def check_long(self, long: float) -> None:
         error_msg = "Longitude must be a number between -180 and 180"
-        if self.is_a_number(long):
+        if not self.is_a_number(long):
             raise ValueError(error_msg)
         long_ok = long < 180 and long > -180
         if not long_ok:
             raise ValueError(error_msg)
 
     def is_a_number(self, value) -> bool:
-        val_type = type(value)
-        return val_type in [int, float]
-
+        return isinstance(value, int) or isinstance(value, float)
 
 
 class Place:
-    country: Country
-    state: str
-    city: str
-    zip: str
-    coord: LatLong
-    elev: int
+    def __init__(
+        self,
+        country: Country,
+        state: str,
+        city: str,
+        zip: str,
+        coord: LatLong,
+        elev: int
+    ) -> None:
+
+        self.check_values(country, state, city, zip, coord, elev)
+
+        self.country = country
+        self.state = state
+        self.city = city
+        self.zip = zip
+        self.coord = coord
+        self.elev = elev
+
+    def __str__(self) -> str:
+        return f"{self.city}, {self.state}, {self.country.code}"
+
+    def __repr__(self) -> str:
+        return (self.country.code, self.zip)
+
+    def check_values(
+        self,
+        country: Country,
+        state: str,
+        city: str,
+        zip: str,
+        coord: LatLong,
+        elev: int
+    ) -> None:
+        if not isinstance(country, Country):
+            raise ValueError()
+        if not self.is_nonempty_string(state):
+            raise ValueError()
+        if not self.is_nonempty_string(city):
+            raise ValueError()
+        if not self.is_nonempty_string(zip):
+            raise ValueError()
+        if not isinstance(coord, LatLong):
+            raise ValueError()
+        if not isinstance(elev, int):
+            raise ValueError()
+
+    def is_nonempty_string(self, value) -> bool:
+        if not isinstance(value, str):
+            raise ValueError('Value must be a string!')
+        return len(value) > 0
 
 
 class Planter:
