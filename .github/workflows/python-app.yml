@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-lts-latest
+    runs-on: ubuntu-lts
 
   steps:
     - uses: actions/checkout@v3
