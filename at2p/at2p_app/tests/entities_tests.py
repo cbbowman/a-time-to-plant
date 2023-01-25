@@ -1,10 +1,16 @@
-from at2p_app.entities import Temp, TempRange, TempReqList, Crop, Country
+from at2p_app.entities import (
+    Temp,
+    TempRange,
+    TempReqList,
+    Crop,
+    Country,
+    LatLong,
+)
 from django.test import TestCase
 
 
 class TestTempRange(TestCase):
     def test_create_temp_range(self) -> None:
-        # tr_fact = TempRangeFactory()
         small_float = 1.0
         big_int = 100
         tr = TempRange(min=small_float, max=big_int)
@@ -89,31 +95,12 @@ class CountryTest(TestCase):
         self.assertRaises(ValueError, Country, name=name, code=code)
 
 
-#         name = None
-#         self.assertRaises(ValueError, c_fact._get_country, name=name)
-
-#         code = 'grc'
-#         self.assertRaises(ValueError, c_fact._get_country, code=code)
-
-#         code = None
-#         self.assertRaises(ValueError, c_fact._get_country, code=code)
-
-
-# class LatLongFactory:
-#     def _get_lat_long(self, lat: float = 10.0, long: float = 10.0) -> LatLong:
-#         return LatLong(lat, long)
-
-
-# class LatLongTest(TestCase):
-#     def test_create_lat_long(self) -> None:
-#         ll_fact = LatLongFactory()
-#         ll = ll_fact._get_lat_long()
-#         self.assertTrue(isinstance(ll, LatLong))
-
-#         ll_str = f'Latitude: {ll.lat:.4f}\nLongitude: {ll.long:.4f}'
-#         ll_repr = (ll.lat, ll.long)
-#         self.assertEqual(ll.__str__(), ll_str)
-#         self.assertEqual(ll.__repr__(), ll_repr)
+class LatLongTest(TestCase):
+    def test_create_lat_long(self) -> None:
+        ll = LatLong(10.5, -10.5)
+        self.assertTrue(isinstance(ll, LatLong))
+        ll_str = "10\u00B030\u20320\u2033N 10\u00B030\u20320\u2033W"
+        self.assertEqual(ll.__str__(), ll_str)
 
 #     def test_check_values(self) -> None:
 #         ll_fact = LatLongFactory()

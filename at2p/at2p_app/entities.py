@@ -132,52 +132,32 @@ class Country:
             raise ValueError(error_msg)
 
 
-# class Country:
-#     def __init__(self, full_name: str, code: str) -> None:
-#         self.check_values(full_name, code)
-#         self.full_name = full_name.title()
-#         self.code = code.upper()
+@dataclass
+class LatLong:
+    lat: float
+    long: float
 
-#     def __str__(self):
-#         return self.full_name
+    def __str__(self) -> str:
+        lat = self._deg_min_sec(self.lat)
+        if self.lat < 0:
+            vert = 'S'
+        else:
+            vert = 'N'
+        long = self._deg_min_sec(self.long)
+        if self.long < 0:
+            hor = 'W'
+        else:
+            hor = 'E'
+        return f"{lat}{vert} {long}{hor}"
 
-#     def __repr__(self):
-#         return self.code
-
-#     def check_values(self, full_name: str, code: str) -> None:
-#         self.check_name(full_name)
-#         self.check_code(code)
-#         return
-
-#     def check_name(self, full_name: str) -> None:
-#         error_msg = "Country name must be a string!"
-#         name_is_string = type(full_name) == str
-#         if not name_is_string:
-#             raise ValueError(error_msg)
-
-#         error_msg = "Country name must not be blank"
-#         if len(full_name) == 0:
-#             raise ValueError(error_msg)
-#         return
-
-#     def check_code(self, code: str) -> None:
-#         error_msg = "Country code must be a two character string!"
-#         code_is_string = type(code) == str
-#         if not code_is_string:
-#             raise ValueError(error_msg)
-
-#         code_length = 2
-#         if len(code) != code_length:
-#             raise ValueError(error_msg)
-
-#         return
-
-
-# class LatLong:
-#     def __init__(self, lat: float, long: float) -> None:
-#         self.check_values(lat, long)
-#         self.lat = float(lat)
-#         self.long = float(long)
+    def _deg_min_sec(self, coord) -> str:
+        if coord < 0:
+            coord = -1 * coord
+        deg = coord // 1
+        min_dec = (self.lat % 1) * 60
+        min = min_dec // 1
+        sec = round((min_dec % 1) * 60)
+        return f"{deg:.0F}\u00B0{min:.0F}\u2032{sec:.0F}\u2033"
 
 #     def __str__(self):
 #         str_lat = f"Latitude: {self.lat:.4f}"
