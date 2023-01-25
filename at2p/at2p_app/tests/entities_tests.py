@@ -1,25 +1,20 @@
-from at2p_app.entities import TempRange, Crop, Country, LatLong, Place, Temp
+from at2p_app.entities import Temp, TempRange, TempReqList, Crop, Country
 from django.test import TestCase
-
-
-# class TempRangeFactory:
-#     def _get_temp_range(self, min: int = 1, max: int = 100) -> TempRange:
-#         return TempRange(min, max)
 
 
 class TestTempRange(TestCase):
     def test_create_temp_range(self) -> None:
         # tr_fact = TempRangeFactory()
-        min = Temp(1.0)
-        max = Temp(100)
-        tr = TempRange(min=min, max=max)
+        small_float = 1.0
+        big_int = 100
+        tr = TempRange(min=small_float, max=big_int)
         self.assertTrue(isinstance(tr, TempRange))
 
-        tr_str = f'{min} \u2013 {max}'
+        tr_str = f"{round(small_float)} \u00B0F \u2013 {big_int} \u00B0F"
         self.assertEqual(tr.__str__(), tr_str)
 
     def test_value_cleaning(self) -> None:
-        max = 'Not an integer'
+        max = "Not an integer"
         self.assertRaises(ValueError, Temp, max)
         min = None
         self.assertRaises(ValueError, Temp, min)
@@ -30,62 +25,69 @@ class TestTempRange(TestCase):
         self.assertRaises(ValueError, TempRange, min=larger, max=smaller)
 
 
-# class CropFactory:
-#     def _get_crop(
-#         self,
-#         name: str = 'Boberries',
-#         abs: TempRange = TempRange(min=Temp(1), max=Temp(100)),
-#         opt: TempRange = TempRange(min=Temp(45), max=Temp(55)),
-#     ) -> Crop:
-#         return Crop(name, abs, opt)
+class TestTempReqList(TestCase):
+    def test_create_temp_req_list(self):
+        abs_range = TempRange(0, 100)
+        opt_range = TempRange(40, 60)
+        req = TempReqList({"absolute": abs_range, "optimal": opt_range})
+        self.assertTrue(isinstance(req, TempReqList))
+
+    def test_validate_abs_and_opt(self):
+        abs_range = TempRange(0, 50)
+        opt_range = TempRange(75, 100)
+        self.assertRaises(
+            ValueError,
+            TempReqList,
+            {"absolute": abs_range, "optimal": opt_range},
+        )
 
 
-# class CropTest(TestCase):
-#     def test_create_crop(self) -> None:
-#         c_fact = CropFactory()
-#         c = c_fact._get_crop()
-#         self.assertTrue(isinstance(c, Crop))
+class TestCrop(TestCase):
+    def test_crop_creation(self):
+        abs = TempRange(0, 100)
+        opt = TempRange(40, 60)
+        req = TempReqList({"absolute": abs, "optimal": opt})
+        boberries = Crop("Boberries", req)
+        self.assertTrue(isinstance(boberries, Crop))
+        self.assertEqual(boberries.__str__(), "Boberries")
+        self.assertEqual(boberries.reqs, req)
 
-#         c_str = c.name
-#         c_repr = c.name
-#         self.assertEqual(c.__str__(), c_str)
-#         self.assertEqual(c.__repr__(), c_repr)
+    def test_value_errors(self):
+        abs = TempRange(0, 100)
+        opt = TempRange(40, 60)
+        req = TempReqList({"absolute": abs, "optimal": opt})
 
-#     def test_value_errors(self) -> None:
-#         c_fact = CropFactory()
-#         name = None
-#         self.assertRaises(ValueError, c_fact._get_crop, name=name)
-
-#         name = ''
-#         self.assertRaises(ValueError, c_fact._get_crop, name=name)
-
-#     def test_check_temp_ranges(self) -> None:
-#         c_fact = CropFactory()
-#         abs = TempRange(min=Temp(30), max=Temp(60))
-#         opt = TempRange(min=Temp(10), max=Temp(40))
-#         self.assertRaises(ValueError, c_fact._get_crop, abs=abs, opt=opt)
+        name = ""
+        self.assertRaises(ValueError, Crop, name, req)
 
 
-# class CountryFactory:
-#     def _get_country(self, name: str = 'Greece', code: str = 'GR') -> Country:
-#         return Country(name, code)
+class CountryTest(TestCase):
+    def test_create_country(self) -> None:
+        name = "Greece"
+        code = "GR"
+        c = Country(name=name, code=code)
+        self.assertTrue(isinstance(c, Country))
 
+        c_str = name
+        self.assertEqual(c.__str__(), c_str)
 
-# class CountryTest(TestCase):
-#     def test_create_country(self) -> None:
-#         c_fact = CountryFactory()
-#         c = c_fact._get_country()
-#         self.assertTrue(isinstance(c, Country))
+    def test_value_errors(self) -> None:
+        name = ""
+        code = "us"
+        self.assertRaises(ValueError, Country, name=name, code=code)
+        name = 3
+        code = "us"
+        self.assertRaises(ValueError, Country, name=name, code=code)
+        name = "United States"
+        code = True
+        self.assertRaises(ValueError, Country, name=name, code=code)
+        name = "Greece"
+        code = None
+        self.assertRaises(ValueError, Country, name=name, code=code)
+        name = "Greece"
+        code = "GRE"
+        self.assertRaises(ValueError, Country, name=name, code=code)
 
-#         c_str = c.full_name
-#         c_repr = c.code
-#         self.assertEqual(c.__str__(), c_str)
-#         self.assertEqual(c.__repr__(), c_repr)
-
-#     def test_value_errors(self) -> None:
-#         c_fact = CountryFactory()
-#         name = ''
-#         self.assertRaises(ValueError, c_fact._get_country, name=name)
 
 #         name = None
 #         self.assertRaises(ValueError, c_fact._get_country, name=name)
