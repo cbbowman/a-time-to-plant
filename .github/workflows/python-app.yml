@@ -28,4 +28,4 @@ jobs:
         pipenv install
     - name: Test with django
       run: |
-        pipenv run python manage.py test --pattern="*_tests.py"
+        pipenv run python at2p/manage.py test --pattern="*_tests.py"
