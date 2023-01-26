@@ -1,6 +1,18 @@
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
+import uuid
+from abc import ABC, abstractmethod, abstractproperty
 from typing import Dict
+from math import trunc
+
+
+def deg_min_and_sec(coord: float):
+    coord = abs(coord)
+    deg = int(trunc(coord))
+    deg_remainder = coord % 1
+    min = int(trunc(deg_remainder * 60))
+    min_remainder = (deg_remainder * 60) % 1
+    sec = int(round(min_remainder * 60))
+    return [deg, min, sec]
 
 
 @dataclass(slots=True, order=True, eq=True)
@@ -10,10 +22,17 @@ class Temp:
     temp: float
     scale: str = "F"
 
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
+
     def __str__(self) -> str:
         return f"{self.temp:.0F} \u00B0{self.scale}"
 
     def __post_init__(self) -> None:
+        self._validate()
+
+    def _validate(self) -> bool:
         if not isinstance(self.temp, (int, float)):
             raise ValueError("Temp must be a number!")
 
@@ -25,23 +44,20 @@ class TempRange:
     min: Temp
     max: Temp
 
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
+
     def __init__(self, min, max) -> None:
         self.min = Temp(min)
         self.max = Temp(max)
 
     def __post_init__(self) -> None:
-        if not self.validate():
-            raise ValueError("Temp range incorrect")
-        return
+        self._validate()
 
-    def validate(self) -> bool:
-        if not isinstance(self.min, Temp):
-            return False
-        if not isinstance(self.max, Temp):
-            return False
-        if self.min > self.max:
-            return False
-        return True
+    def _validate(self) -> None:
+        if self.min.temp > self.max.temp:
+            raise ValueError("Temp range incorrect")
 
     def __str__(self) -> str:
         return f"{self.min} \u2013 {self.max}"
@@ -49,32 +65,24 @@ class TempRange:
 
 @dataclass
 class AbstractRequirementList(ABC):
-    requirements: dict
+    requirements: Dict
 
     @abstractmethod
-    def _validate_requirements(self) -> None:
+    def _validate(self) -> None:
         pass
 
-    def __init__(self) -> None:
-        self._validate_requirements()
-        super().__init__()
 
-
-@dataclass(slots=True)
+@dataclass
 class TempReqList(AbstractRequirementList):
-    requirements: Dict[str, TempRange]
-
     def __post_init__(self) -> None:
-        self._validate_requirements()
+        self._validate()
 
-    def _validate_requirements(self) -> None:
+    def _validate(self) -> None:
         mins_wrong = (
-            not self.requirements["absolute"].min
-            < self.requirements["optimal"].min
+            not self.requirements["abs"].min < self.requirements["opt"].min
         )
         maxs_wrong = (
-            not self.requirements["absolute"].max
-            > self.requirements["optimal"].max
+            not self.requirements["abs"].max > self.requirements["opt"].max
         )
         if mins_wrong or maxs_wrong:
             raise ValueError("Temp ranges are incorrrect")
@@ -85,6 +93,10 @@ class TempReqList(AbstractRequirementList):
 class Crop:
     name: str
     reqs: AbstractRequirementList
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
 
     def __str__(self) -> str:
         return self.name
@@ -106,6 +118,10 @@ class Crop:
 class Country:
     name: str
     code: str
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
 
     def __str__(self) -> str:
         return self.name
@@ -131,65 +147,61 @@ class Country:
         if not code_is_2_chars:
             raise ValueError(error_msg)
 
+    def _clean(self):
+        self.name = self.name.title()
+        self.code = self.code.upper()
+
 
 @dataclass
 class LatLong:
     lat: float
     long: float
 
+    def __post_init__(self):
+        self._check_values()
+        return
+
     def __str__(self) -> str:
         lat = self._deg_min_sec(self.lat)
         if self.lat < 0:
-            vert = 'S'
+            vert = "S"
         else:
-            vert = 'N'
+            vert = "N"
         long = self._deg_min_sec(self.long)
         if self.long < 0:
-            hor = 'W'
+            hor = "W"
         else:
-            hor = 'E'
+            hor = "E"
         return f"{lat}{vert} {long}{hor}"
 
     def _deg_min_sec(self, coord) -> str:
-        if coord < 0:
-            coord = -1 * coord
-        deg = coord // 1
-        min_dec = (self.lat % 1) * 60
-        min = min_dec // 1
-        sec = round((min_dec % 1) * 60)
-        return f"{deg:.0F}\u00B0{min:.0F}\u2032{sec:.0F}\u2033"
 
-#     def __str__(self):
-#         str_lat = f"Latitude: {self.lat:.4f}"
-#         str_long = f"Longitude: {self.long:.4f}"
-#         return str_lat + "\n" + str_long
+        dms = deg_min_and_sec(coord)
+        return f"{dms[0]}\u00B0{dms[1]}\u2032{dms[2]}\u2033"
 
-#     def __repr__(self):
-#         return (self.lat, self.long)
+    def _check_values(self) -> None:
+        self._check_lat()
+        self._check_long()
 
-#     def check_values(self, lat: float, long: float) -> None:
-#         self.check_lat(lat)
-#         self.check_long(long)
+    def _check_lat(self) -> None:
+        error_msg = "Latitude must be a number between -90 and 90"
+        if not self._is_a_number(self.lat):
+            raise ValueError(error_msg)
+        lat_ok = self.lat < 90 and self.lat > -90
+        if not lat_ok:
+            raise ValueError(error_msg)
+        return
 
-#     def check_lat(self, lat: float) -> None:
-#         error_msg = "Latitude must be a number between -90 and 90"
-#         if not self.is_a_number(lat):
-#             raise ValueError(error_msg)
-#         lat_ok = lat < 90 and lat > -90
-#         if not lat_ok:
-#             raise ValueError(error_msg)
-#         return
+    def _check_long(self) -> None:
+        error_msg = "Longitude must be a number between -180 and 180"
+        if not self._is_a_number(self.long):
+            raise ValueError(error_msg)
+        long_ok = self.long < 180 and self.long > -180
+        if not long_ok:
+            raise ValueError(error_msg)
 
-#     def check_long(self, long: float) -> None:
-#         error_msg = "Longitude must be a number between -180 and 180"
-#         if not self.is_a_number(long):
-#             raise ValueError(error_msg)
-#         long_ok = long < 180 and long > -180
-#         if not long_ok:
-#             raise ValueError(error_msg)
-
-#     def is_a_number(self, value) -> bool:
-#         return isinstance(value, int) or isinstance(value, float)
+    def _is_a_number(self, value) -> bool:
+        return isinstance(value, int) or isinstance(value, float)
 
 
 # class Place:
