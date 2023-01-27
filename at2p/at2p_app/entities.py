@@ -1,18 +1,13 @@
 from dataclasses import dataclass
-import uuid
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import Dict
-from math import trunc
+from enum import Enum, auto
 
 
-def deg_min_and_sec(coord: float):
-    coord = abs(coord)
-    deg = int(trunc(coord))
-    deg_remainder = coord % 1
-    min = int(trunc(deg_remainder * 60))
-    min_remainder = (deg_remainder * 60) % 1
-    sec = int(round(min_remainder * 60))
-    return [deg, min, sec]
+@dataclass
+class TempScale(Enum):
+    F = auto()
+    C = auto()
 
 
 @dataclass(slots=True, order=True, eq=True)
@@ -20,7 +15,7 @@ class Temp:
     """Class for temperate value"""
 
     temp: float
-    scale: str = "F"
+    scale: TempScale = "F"
 
     @classmethod
     def from_dict(cls, d):
@@ -35,6 +30,10 @@ class Temp:
     def _validate(self) -> bool:
         if not isinstance(self.temp, (int, float)):
             raise ValueError("Temp must be a number!")
+
+    def is_in_range(self, min: int, max: int, scale: TempScale) -> bool:
+        
+        return min < self.temp and self.temp < max
 
 
 @dataclass(slots=True, kw_only=True)
@@ -161,23 +160,12 @@ class LatLong:
         self._check_values()
         return
 
-    def __str__(self) -> str:
-        lat = self._deg_min_sec(self.lat)
-        if self.lat < 0:
-            vert = "S"
-        else:
-            vert = "N"
-        long = self._deg_min_sec(self.long)
-        if self.long < 0:
-            hor = "W"
-        else:
-            hor = "E"
-        return f"{lat}{vert} {long}{hor}"
-
-    def _deg_min_sec(self, coord) -> str:
-
-        dms = deg_min_and_sec(coord)
-        return f"{dms[0]}\u00B0{dms[1]}\u2032{dms[2]}\u2033"
+    def __str__(self):
+        ns = "S" if self.lat < 0 else "N"
+        ew = "W" if self.long < 0 else "E"
+        lat_str = f"{self.lat:.2f{ns}}\u00b0"
+        long_str = f"{self.long:.2f{ew}}\u00b0"
+        return f"{lat_str} {long_str}"
 
     def _check_values(self) -> None:
         self._check_lat()

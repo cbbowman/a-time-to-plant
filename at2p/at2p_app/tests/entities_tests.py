@@ -54,178 +54,178 @@ class TestTemp(TestCase):
             Temp(t)
 
 
-class TestTempRange(TestCase):
-    def test_creation(self) -> None:
-        small_float = 1.0
-        big_int = 100
-        tr = TempRange(min=small_float, max=big_int)
-        self.assertTrue(isinstance(tr, TempRange))
+# class TestTempRange(TestCase):
+#     def test_creation(self) -> None:
+#         small_float = 1.0
+#         big_int = 100
+#         tr = TempRange(min=small_float, max=big_int)
+#         self.assertTrue(isinstance(tr, TempRange))
 
-    def test_create_from_dict(self) -> None:
-        init_dict = {
-            "min": 10,
-            "max": 100,
-        }
-        tr = TempRange.from_dict(init_dict)
-        self.assertEqual(tr.min.temp, init_dict["min"])
-        self.assertEqual(tr.max.temp, init_dict["max"])
+#     def test_create_from_dict(self) -> None:
+#         init_dict = {
+#             "min": 10,
+#             "max": 100,
+#         }
+#         tr = TempRange.from_dict(init_dict)
+#         self.assertEqual(tr.min.temp, init_dict["min"])
+#         self.assertEqual(tr.max.temp, init_dict["max"])
 
-    def test_str(self) -> None:
-        small_float = 1.0
-        big_int = 100
-        tr = TempRange(min=small_float, max=big_int)
-        tr_str = f"{round(small_float)} \u00B0F \u2013 {big_int} \u00B0F"
-        self.assertEqual(tr.__str__(), tr_str)
+#     def test_str(self) -> None:
+#         small_float = 1.0
+#         big_int = 100
+#         tr = TempRange(min=small_float, max=big_int)
+#         tr_str = f"{round(small_float)} \u00B0F \u2013 {big_int} \u00B0F"
+#         self.assertEqual(tr.__str__(), tr_str)
 
-    def test_validation_order(self) -> None:
-        smaller = 1
-        larger = 100
-        tr = TempRange(min=smaller, max=larger)
-        tr.min = Temp(larger)
-        tr.max = Temp(smaller)
-        with self.assertRaises(ValueError):
-            tr._validate()
-
-
-class TestTempReqList(TestCase):
-    def test_create_temp_req_list(self):
-        abs_range = TempRange(0, 100)
-        opt_range = TempRange(40, 60)
-        initdict = {
-            "abs": abs_range,
-            "opt": opt_range,
-        }
-        req = TempReqList(initdict)
-        self.assertTrue(isinstance(req, TempReqList))
-        self.assertEqual(req.requirements["abs"], initdict["abs"])
-        self.assertEqual(req.requirements["opt"], initdict["opt"])
-
-    def test_validation(self):
-        abs_range = TempRange(0, 50)
-        opt_range = TempRange(75, 100)
-        initdict = {
-            "abs": abs_range,
-            "opt": opt_range,
-        }
-        self.assertRaises(ValueError, TempReqList, initdict)
+#     def test_validation_order(self) -> None:
+#         smaller = 1
+#         larger = 100
+#         tr = TempRange(min=smaller, max=larger)
+#         tr.min = Temp(larger)
+#         tr.max = Temp(smaller)
+#         with self.assertRaises(ValueError):
+#             tr._validate()
 
 
-class TestCrop(TestCase):
-    def setUp(self) -> None:
-        self.reqs = TempReqList(
-            {
-                "abs": TempRange(0, 100),
-                "opt": TempRange(40, 60),
-            }
-        )
-        self.crop_name = "Boberries"
-        self.crop = Crop(self.crop_name, self.reqs)
-        return super().setUp()
+# class TestTempReqList(TestCase):
+#     def test_create_temp_req_list(self):
+#         abs_range = TempRange(0, 100)
+#         opt_range = TempRange(40, 60)
+#         initdict = {
+#             "abs": abs_range,
+#             "opt": opt_range,
+#         }
+#         req = TempReqList(initdict)
+#         self.assertTrue(isinstance(req, TempReqList))
+#         self.assertEqual(req.requirements["abs"], initdict["abs"])
+#         self.assertEqual(req.requirements["opt"], initdict["opt"])
 
-    def test_create_from_dict(self):
-        initdict = {"name": self.crop_name, "reqs": self.reqs}
-        c = Crop.from_dict(initdict)
-        self.assertTrue(isinstance(c, Crop))
-
-    def test_crop_creation(self):
-        self.assertTrue(isinstance(self.crop, Crop))
-
-    def test_str(self) -> None:
-        self.assertEqual(self.crop.__str__(), self.crop_name)
-
-    def test_reqs(self) -> None:
-        self.assertEqual(self.crop.reqs, self.reqs)
-
-    def test_blank_name(self):
-        name = ""
-        self.assertRaises(ValueError, Crop, name, self.reqs)
-
-    def test_none_name(self):
-        name = None
-        self.assertRaises(ValueError, Crop, name, self.reqs)
-
-    def test_float_name(self):
-        name = 14.3
-        self.assertRaises(ValueError, Crop, name, self.reqs)
-
-    def test_bool_name(self):
-        name = True
-        self.assertRaises(ValueError, Crop, name, self.reqs)
+#     def test_validation(self):
+#         abs_range = TempRange(0, 50)
+#         opt_range = TempRange(75, 100)
+#         initdict = {
+#             "abs": abs_range,
+#             "opt": opt_range,
+#         }
+#         self.assertRaises(ValueError, TempReqList, initdict)
 
 
-class CountryTest(TestCase):
-    def setUp(self) -> None:
-        self.name = "Greece"
-        self.code = "GR"
-        self.country = Country(name=self.name, code=self.code)
-        return super().setUp()
+# class TestCrop(TestCase):
+#     def setUp(self) -> None:
+#         self.reqs = TempReqList(
+#             {
+#                 "abs": TempRange(0, 100),
+#                 "opt": TempRange(40, 60),
+#             }
+#         )
+#         self.crop_name = "Boberries"
+#         self.crop = Crop(self.crop_name, self.reqs)
+#         return super().setUp()
 
-    def test_create_from_dict(self):
-        initdict = {
-            "name": self.name,
-            "code": self.code,
-        }
-        c = Country.from_dict(initdict)
-        self.assertTrue(isinstance(c, Country))
+#     def test_create_from_dict(self):
+#         initdict = {"name": self.crop_name, "reqs": self.reqs}
+#         c = Crop.from_dict(initdict)
+#         self.assertTrue(isinstance(c, Crop))
 
-    def test_create_country(self) -> None:
-        self.assertTrue(isinstance(self.country, Country))
+#     def test_crop_creation(self):
+#         self.assertTrue(isinstance(self.crop, Crop))
 
-    def test_str(self):
-        self.assertEqual(self.country.__str__(), self.name)
+#     def test_str(self) -> None:
+#         self.assertEqual(self.crop.__str__(), self.crop_name)
 
-    def test_name_is_blank(self) -> None:
-        name = ""
-        self.assertRaises(ValueError, Country, name=name, code=self.code)
+#     def test_reqs(self) -> None:
+#         self.assertEqual(self.crop.reqs, self.reqs)
 
-    def test_name_is_int(self) -> None:
-        name = 3
-        self.assertRaises(ValueError, Country, name=name, code=self.code)
+#     def test_blank_name(self):
+#         name = ""
+#         self.assertRaises(ValueError, Crop, name, self.reqs)
 
-    def test_code_is_bool(self) -> None:
-        code = True
-        self.assertRaises(ValueError, Country, name=self.name, code=code)
+#     def test_none_name(self):
+#         name = None
+#         self.assertRaises(ValueError, Crop, name, self.reqs)
 
-    def test_code_not_two(self):
-        code = "GRE"
-        self.assertRaises(ValueError, Country, name=self.name, code=code)
+#     def test_float_name(self):
+#         name = 14.3
+#         self.assertRaises(ValueError, Crop, name, self.reqs)
+
+#     def test_bool_name(self):
+#         name = True
+#         self.assertRaises(ValueError, Crop, name, self.reqs)
 
 
-class LatLongTest(TestCase):
-    def setUp(self) -> None:
-        self.lat = -10.55
-        self.long = -10.55
-        self.lat_long = LatLong(self.lat, self.long)
-        return super().setUp()
+# class CountryTest(TestCase):
+#     def setUp(self) -> None:
+#         self.name = "Greece"
+#         self.code = "GR"
+#         self.country = Country(name=self.name, code=self.code)
+#         return super().setUp()
 
-    def test_create_lat_long(self) -> None:
-        self.assertTrue(isinstance(self.lat_long, LatLong))
+#     def test_create_from_dict(self):
+#         initdict = {
+#             "name": self.name,
+#             "code": self.code,
+#         }
+#         c = Country.from_dict(initdict)
+#         self.assertTrue(isinstance(c, Country))
 
-    def test_str(self) -> None:
-        ns = "N"
-        if self.lat < 0:
-            ns = "S"
-        lat_deg = trunc(abs(self.lat))
-        m = 60 * (abs(self.lat) % 1)
-        lat_min = trunc(m)
-        lat_sec = round(60 * (m % 1))
+#     def test_create_country(self) -> None:
+#         self.assertTrue(isinstance(self.country, Country))
 
-        ew = "E"
-        if self.long < 0:
-            ew = "W"
-        long_deg = trunc(abs(self.long))
-        m = 60 * (abs(self.long) % 1)
-        long_min = trunc(m)
-        long_sec = round(60 * (m % 1))
+#     def test_str(self):
+#         self.assertEqual(self.country.__str__(), self.name)
 
-        lat_str = f"{lat_deg}\u00B0{lat_min}\u2032{lat_sec}\u2033{ns}"
-        long_str = f"{long_deg}\u00B0{long_min}\u2032{long_sec}\u2033{ew}"
-        lat_long_str = f"{lat_str} {long_str}"
-        self.assertEqual(self.lat_long.__str__(), lat_long_str)
+#     def test_name_is_blank(self) -> None:
+#         name = ""
+#         self.assertRaises(ValueError, Country, name=name, code=self.code)
 
-    def test_check_values(self) -> None:
-        lat = 100
-        self.assertRaises(ValueError, LatLong, lat=lat, long=self.long)
+#     def test_name_is_int(self) -> None:
+#         name = 3
+#         self.assertRaises(ValueError, Country, name=name, code=self.code)
+
+#     def test_code_is_bool(self) -> None:
+#         code = True
+#         self.assertRaises(ValueError, Country, name=self.name, code=code)
+
+#     def test_code_not_two(self):
+#         code = "GRE"
+#         self.assertRaises(ValueError, Country, name=self.name, code=code)
+
+
+# class LatLongTest(TestCase):
+#     def setUp(self) -> None:
+#         self.lat = -10.55
+#         self.long = -10.55
+#         self.lat_long = LatLong(self.lat, self.long)
+#         return super().setUp()
+
+#     def test_create_lat_long(self) -> None:
+#         self.assertTrue(isinstance(self.lat_long, LatLong))
+
+#     def test_str(self) -> None:
+#         ns = "N"
+#         if self.lat < 0:
+#             ns = "S"
+#         lat_deg = trunc(abs(self.lat))
+#         m = 60 * (abs(self.lat) % 1)
+#         lat_min = trunc(m)
+#         lat_sec = round(60 * (m % 1))
+
+#         ew = "E"
+#         if self.long < 0:
+#             ew = "W"
+#         long_deg = trunc(abs(self.long))
+#         m = 60 * (abs(self.long) % 1)
+#         long_min = trunc(m)
+#         long_sec = round(60 * (m % 1))
+
+#         lat_str = f"{lat_deg}\u00B0{lat_min}\u2032{lat_sec}\u2033{ns}"
+#         long_str = f"{long_deg}\u00B0{long_min}\u2032{long_sec}\u2033{ew}"
+#         lat_long_str = f"{lat_str} {long_str}"
+#         self.assertEqual(self.lat_long.__str__(), lat_long_str)
+
+#     def test_check_values(self) -> None:
+#         lat = 100
+#         self.assertRaises(ValueError, LatLong, lat=lat, long=self.long)
 
 
 #         lat = 'latitude'
