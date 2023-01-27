@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
-from typing import Dict
 from enum import Enum, auto
+
+COUNTRIES = {"US": "United States"}
+COUNTRY_CODE_LENGTH = 2
 
 
 @dataclass
@@ -10,11 +11,49 @@ class TempScale(Enum):
     C = auto()
 
 
+class TemperatureError(Exception):
+    error_msg = "Generic Temperature Error"
+
+    def __init__(
+        self, temp: int, scale: TempScale, error_msg: str = error_msg
+    ) -> None:
+        message = f"\n{error_msg}\nTemp: {temp}\nScale: {scale}"
+        super().__init__(message)
+
+
+class TempRangeError(Exception):
+    generic_msg = "Generic Temperature Range Error"
+
+    def __init__(
+        self, min: int, max: int, error_msg: str = generic_msg
+    ) -> None:
+        message = f"\n{error_msg}\nMin: {min}\nMax: {max}"
+        super().__init__(message)
+
+
+class CountryError(Exception):
+    generic_msg = "Generic Country Error"
+
+    def __init__(self, code: str, error_msg: str = generic_msg) -> None:
+        message = f"\n{error_msg}\nCode: {code}"
+        super().__init__(message)
+
+
+class LatLongError(Exception):
+    generic_msg = "Generic Coordinates Error"
+
+    def __init__(
+        self, lat: float, long: float, error_msg: str = generic_msg
+    ) -> None:
+        message = f"\n{error_msg}\nLat: {lat}\nLong: {long}"
+        super().__init__(message)
+
+
 @dataclass(slots=True, order=True, eq=True)
 class Temp:
     """Class for temperate value"""
 
-    temp: float
+    value: float
     scale: TempScale = "F"
 
     @classmethod
@@ -22,18 +61,25 @@ class Temp:
         return cls(**d)
 
     def __str__(self) -> str:
-        return f"{self.temp:.0F} \u00B0{self.scale}"
+        return f"{self.value} \u00B0{self.scale}"
 
     def __post_init__(self) -> None:
         self._validate()
+        self._clean()
 
-    def _validate(self) -> bool:
-        if not isinstance(self.temp, (int, float)):
-            raise ValueError("Temp must be a number!")
+    def _validate(self) -> None:
+        if not isinstance(self.value, (int, float)):
+            raise TemperatureError(self.value, self.scale)
 
-    def is_in_range(self, min: int, max: int, scale: TempScale) -> bool:
-        
-        return min < self.temp and self.temp < max
+    def _clean(self) -> None:
+        self.value = int(round(self.value))
+
+    def is_in_range(self, min: int, max: int, scale: TempScale = "F") -> bool:
+        if self.scale == scale:
+            return (min < self.value) and (self.value < max)
+        else:
+            error_msg = f"Temperature range must be of scale {self.scale}"
+            raise TemperatureError(self.value, self.scale, error_msg)
 
 
 @dataclass(slots=True, kw_only=True)
@@ -50,105 +96,58 @@ class TempRange:
     def __init__(self, min, max) -> None:
         self.min = Temp(min)
         self.max = Temp(max)
+        self.__post_init__()
 
     def __post_init__(self) -> None:
         self._validate()
 
     def _validate(self) -> None:
-        if self.min.temp > self.max.temp:
-            raise ValueError("Temp range incorrect")
+        error_msg = "Min may not be greater than max"
+        if self.min.value > self.max.value:
+            raise TempRangeError(self.min.value, self.max.value, error_msg)
 
     def __str__(self) -> str:
         return f"{self.min} \u2013 {self.max}"
 
 
-@dataclass
-class AbstractRequirementList(ABC):
-    requirements: Dict
-
-    @abstractmethod
-    def _validate(self) -> None:
-        pass
-
-
-@dataclass
-class TempReqList(AbstractRequirementList):
-    def __post_init__(self) -> None:
-        self._validate()
-
-    def _validate(self) -> None:
-        mins_wrong = (
-            not self.requirements["abs"].min < self.requirements["opt"].min
-        )
-        maxs_wrong = (
-            not self.requirements["abs"].max > self.requirements["opt"].max
-        )
-        if mins_wrong or maxs_wrong:
-            raise ValueError("Temp ranges are incorrrect")
-        return
-
-
-@dataclass
-class Crop:
-    name: str
-    reqs: AbstractRequirementList
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls(**d)
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __post_init__(self):
-        self._validate()
-
-    def _validate(self):
-        error_msg = "Crop name must be a string!"
-        if not isinstance(self.name, str):
-            raise ValueError(error_msg)
-
-        error_msg = "Crop name may not be blank"
-        if not len(self.name) > 0:
-            raise ValueError(error_msg)
-
-
 @dataclass(slots=True, kw_only=True)
 class Country:
-    name: str
     code: str
+    name: str
 
-    @classmethod
-    def from_dict(cls, d):
-        return cls(**d)
+    def __init__(self, code) -> None:
+        self.code = code
+        self.__post_init__()
+        return
 
     def __str__(self) -> str:
         return self.name
 
     def __post_init__(self) -> None:
         self._validate()
-        # self._clean()
-
-    def _validate(self) -> None:
-        error_msg = "Name and code must be strings!"
-        name_not_str = not isinstance(self.name, str)
-        code_not_str = not isinstance(self.code, str)
-        if name_not_str or code_not_str:
-            raise ValueError(error_msg)
-
-        error_msg = "Name may not be blank!"
-        name_is_blank = not len(self.name) > 0
-        if name_is_blank:
-            raise ValueError(error_msg)
-
-        error_msg = "Code must be exactly two characters!"
-        code_is_2_chars = len(self.code) == 2
-        if not code_is_2_chars:
-            raise ValueError(error_msg)
+        self.name = COUNTRIES[self.code]
+        return
 
     def _clean(self):
-        self.name = self.name.title()
         self.code = self.code.upper()
+        self.code = self.code.strip()
+        self.code = self.code.replace(" ", "")
+        return
+
+    def _validate(self) -> None:
+        if not isinstance(self.code, str):
+            error_msg = "Code must be a string!"
+            raise CountryError(self.code, error_msg)
+
+        self._clean()
+        length_incorrect = len(self.code) != COUNTRY_CODE_LENGTH
+        if length_incorrect:
+            error_msg = "Code length is incorrect!"
+            raise CountryError(self.code, error_msg)
+
+        if self.code not in COUNTRIES.keys():
+            error_msg = "Country code {self.code} is currently unsupported."
+            raise CountryError(self.code, error_msg)
 
 
 @dataclass
@@ -163,8 +162,8 @@ class LatLong:
     def __str__(self):
         ns = "S" if self.lat < 0 else "N"
         ew = "W" if self.long < 0 else "E"
-        lat_str = f"{self.lat:.2f{ns}}\u00b0"
-        long_str = f"{self.long:.2f{ew}}\u00b0"
+        lat_str = f"{abs(self.lat):.2f}\u00b0{ns}"
+        long_str = f"{abs(self.long):.2f}\u00b0{ew}"
         return f"{lat_str} {long_str}"
 
     def _check_values(self) -> None:
@@ -174,19 +173,19 @@ class LatLong:
     def _check_lat(self) -> None:
         error_msg = "Latitude must be a number between -90 and 90"
         if not self._is_a_number(self.lat):
-            raise ValueError(error_msg)
+            raise LatLongError(self.lat, self.long, error_msg)
         lat_ok = self.lat < 90 and self.lat > -90
         if not lat_ok:
-            raise ValueError(error_msg)
+            raise LatLongError(self.lat, self.long, error_msg)
         return
 
     def _check_long(self) -> None:
         error_msg = "Longitude must be a number between -180 and 180"
         if not self._is_a_number(self.long):
-            raise ValueError(error_msg)
+            raise LatLongError(self.lat, self.long, error_msg)
         long_ok = self.long < 180 and self.long > -180
         if not long_ok:
-            raise ValueError(error_msg)
+            raise LatLongError(self.lat, self.long, error_msg)
 
     def _is_a_number(self, value) -> bool:
         return isinstance(value, int) or isinstance(value, float)
@@ -244,18 +243,3 @@ class LatLong:
 #         if not isinstance(value, str):
 #             raise ValueError("Value must be a string!")
 #         return len(value) > 0
-
-
-# class Planter:
-#     username: str
-#     location: Place
-
-#     pass
-
-
-# class Weather:
-#     pass
-
-
-# class Weather:
-#     pass
