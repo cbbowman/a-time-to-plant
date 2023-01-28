@@ -144,11 +144,11 @@ class LatLongTest(TestCase):
         self.assertEqual(self.lat_long.__str__(), lat_long_str)
 
     def test_check_invalid_numbers(self) -> None:
-        lat = 100
-        self.assertRaises(LatLongError, LatLong, lat=lat, long=self.long)
-        long = 200
-        self.assertRaises(LatLongError, LatLong, lat=self.lat, long=long)
+        bad_lat = 100
+        self.assertRaises(LatLongError, LatLong, lat=bad_lat, long=self.long)
+        bad_long = 200
+        self.assertRaises(LatLongError, LatLong, lat=self.lat, long=bad_long)
 
     def test_validation(self):
-        lat = "one hundred"
-        self.assertRaises(LatLongError, LatLong, lat=lat, long=self.long)
+        bad_lat = "one hundred"
+        self.assertRaises(LatLongError, LatLong, lat=bad_lat, long=self.long)
