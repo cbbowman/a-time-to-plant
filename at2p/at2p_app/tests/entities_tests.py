@@ -1,13 +1,5 @@
-from at2p_app.entities import (
-    Temp,
-    TemperatureError,
-    TempRange,
-    TempRangeError,
-    Country,
-    CountryError,
-    LatLong,
-    LatLongError,
-)
+from ..entities import Temp, TemperatureError, TempRange, TempRangeError
+from ..entities import Country, CountryError, LatLong, LatLongError
 from django.test import TestCase
 
 

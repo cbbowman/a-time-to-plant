@@ -1,6 +1,12 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from entities import TempRange
+from .entities import TempRange
+from typing import Optional, Dict, TypedDict
+
+
+class ReqList(TypedDict):
+    type: str
+    req: object
 
 
 @dataclass
@@ -13,6 +19,7 @@ class CropRequirement(ABC):
         pass
 
 
+@dataclass
 class CropRequirementError(Exception):
     error_msg = "Generic Crop Requirements Error"
 
@@ -23,7 +30,23 @@ class CropRequirementError(Exception):
 
 
 class TempRequirementError(CropRequirementError):
-    error_msg = "Generic Temperature Requirements Error"
+    generic_msg = "Generic Temperature Requirement Error"
+
+    def __init__(
+        self, opt: TempRange, abs: TempRange, error_msg: str = generic_msg
+    ) -> None:
+        message = f"\n{error_msg}\nOpt: {opt}\nAbs: {abs}"
+        super().__init__(message)
+
+
+class CropError(Exception):
+    generic_msg = "Generic Crop Error"
+
+    def __init__(
+        self, name: str, reqs: ReqList, error_msg: str = generic_msg
+    ) -> None:
+        message = f"\n{error_msg}\nName: {name}\nRequirements: {reqs}"
+        super().__init__(message)
 
 
 @dataclass
@@ -62,16 +85,6 @@ class TempRequirement(CropRequirement):
 
 
 @dataclass
-class ReqList(ABC):
-    def __post_init__(self) -> None:
-        self._validate()
-
-    @abstractmethod
-    def _validate(self) -> None:
-        pass
-
-
-@dataclass
 class Crop:
     name: str
     reqs: ReqList
@@ -89,11 +102,20 @@ class Crop:
     def _validate(self):
         error_msg = "Crop name must be a string!"
         if not isinstance(self.name, str):
-            raise ValueError(error_msg)
+            raise CropError(self.name, self.reqs, error_msg)
 
         error_msg = "Crop name may not be blank"
         if not len(self.name) > 0:
-            raise ValueError(error_msg)
+            raise CropError(self.name, self.reqs, error_msg)
+
+        error_msg = "Crop requirements must be a dictionary!"
+        if not isinstance(self.reqs, dict):
+            raise CropError(self.name, self.reqs, error_msg)
+
+        error_msg = "Crop reqs must be a CropRequirement"
+        for key in self.reqs:
+            if not isinstance(self.reqs[key], CropRequirement):
+                raise CropError(self.name, self.reqs, error_msg)
 
 
 # class Planter:
