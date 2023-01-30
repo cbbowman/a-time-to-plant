@@ -1,19 +1,24 @@
-from ..entities import Temp, TempRange, Country, LatLong
-from ..use_cases import (
+from at2p_app.domain.entities.weather import Temp, TempRange
+from at2p_app.domain.use_cases.recommend import (
+    Crop,
     CropRequirement,
-    CropRequirementError,
     TempRequirement,
-    TempRequirementError,
     ReqList,
+    CropError,
+    CropRequirementError,
+    TempRequirementError,
 )
-from ..use_cases import Crop, CropError
+
 from django.test import TestCase
 
 
 class TestTempReq(TestCase):
     def setUp(self) -> None:
-        self.temp_range = TempRange(10, 100)
-        self.temp_req = TempRequirement(absolute=self.temp_range)
+        self.abs_temp_range = TempRange(10, 100)
+        self.opt_temp_range = TempRange(50, 60)
+        self.temp_req = TempRequirement(
+            absolute=self.abs_temp_range, optimal=self.opt_temp_range
+        )
         return super().setUp()
 
     def test_create_temp_req_list(self):
@@ -35,7 +40,10 @@ class TestTempReqList(TestCase):
     def test_validation(self):
         bad_range = TempRange(50, 200)
         self.assertRaises(
-            TempRequirementError, TempRequirement, self.abs_range, bad_range
+            TempRequirementError,
+            TempRequirement,
+            absolute=self.abs_range,
+            optimal=bad_range,
         )
 
 
@@ -94,68 +102,3 @@ class TestCrop(TestCase):
     def test_float_name(self):
         name = 14.3
         self.assertRaises(CropError, Crop, name, self.reqs)
-
-
-# class PlaceFactory:
-#     def _get_place(
-#         self,
-#         country: Country = Country('Greece', 'GR'),
-#         state: str = 'Virginia',
-#         city: str = 'Fredericksburg',
-#         zip: str = '22401',
-#         latlong: LatLong = LatLong(0, 0),
-#         elev: int = 100,
-#     ) -> Place:
-#         return Place(country, state, city, zip, latlong, elev)
-
-
-# class PlaceTest(TestCase):
-#     def test_create_place(self) -> None:
-#         p_fact = PlaceFactory()
-#         p = p_fact._get_place()
-#         p_str = f'{p.city}, {p.state}, {p.country.code}'
-#         p_repr = (p.country.code, p.zip)
-#         self.assertIsInstance(p, Place)
-#         self.assertEqual(p.__str__(), p_str)
-#         self.assertEqual(p.__repr__(), p_repr)
-#         return
-
-#     def test_check_str_values(self) -> None:
-#         p_fact = PlaceFactory()
-
-#         bad_value = 12
-#         self.assertRaises(ValueError, p_fact._get_place, state=bad_value)
-#         bad_value = True
-#         self.assertRaises(ValueError, p_fact._get_place, state=bad_value)
-#         bad_value = None
-#         self.assertRaises(ValueError, p_fact._get_place, state=bad_value)
-#         bad_value = ''
-#         self.assertRaises(ValueError, p_fact._get_place, state=bad_value)
-
-#         bad_value = 12
-#         self.assertRaises(ValueError, p_fact._get_place, city=bad_value)
-#         bad_value = True
-#         self.assertRaises(ValueError, p_fact._get_place, city=bad_value)
-#         bad_value = None
-#         self.assertRaises(ValueError, p_fact._get_place, city=bad_value)
-#         bad_value = ''
-#         self.assertRaises(ValueError, p_fact._get_place, city=bad_value)
-
-#         bad_value = 12
-#         self.assertRaises(ValueError, p_fact._get_place, zip=bad_value)
-#         bad_value = True
-#         self.assertRaises(ValueError, p_fact._get_place, zip=bad_value)
-#         bad_value = None
-#         self.assertRaises(ValueError, p_fact._get_place, zip=bad_value)
-#         bad_value = ''
-#         self.assertRaises(ValueError, p_fact._get_place, zip=bad_value)
-
-#     def test_correct_types(self) -> None:
-#         p_fact = PlaceFactory()
-
-#         bad_value = 0
-#         self.assertRaises(ValueError, p_fact._get_place, country=bad_value)
-#         self.assertRaises(ValueError, p_fact._get_place, latlong=bad_value)
-
-#         bad_value = 'Not an integer'
-#         self.assertRaises(ValueError, p_fact._get_place, elev=bad_value)

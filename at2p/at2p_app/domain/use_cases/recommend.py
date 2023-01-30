@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from .entities import TempRange
-from typing import Optional, Dict, TypedDict
+from at2p_app.domain.entities.weather import TempRange
+from typing import TypedDict
 
 
 class ReqList(TypedDict):
@@ -52,35 +52,25 @@ class CropError(Exception):
 @dataclass
 class TempRequirement(CropRequirement):
 
-    absolute: TempRange = None
-    optimal: TempRange = None
-
-    def _is_fully_defined(self):
-        if self.absolute is None or self.optimal is None:
-            return False
-        else:
-            return True
+    absolute: TempRange
+    optimal: TempRange
 
     def _scales_are_correct(self):
-        if self.absolute.min.scale != self.optimal.min.scale:
+        if self.absolute.scale != self.optimal.scale:
             error_msg = "Absolute and optimal temp scales must be equal."
-            raise (TempRequirementError(self, error_msg))
+            raise TempRequirementError(self, error_msg)
         return
 
     def _validate(self) -> None:
-        if not self._is_fully_defined():
-            return
         self._scales_are_correct()
         self._check_ranges()
         return
 
     def _check_ranges(self):
-        mins_wrong = self.absolute.min.value > self.optimal.min.value
-        maxs_wrong = self.absolute.max.value < self.optimal.max.value
-        ranges_intersect = mins_wrong or maxs_wrong
-        if ranges_intersect:
+        ranges_ok = self.absolute.includes(self.optimal)
+        if not ranges_ok:
             error_msg = "Absolute and optimal ranges are incorrect"
-            raise TempRequirementError(self, error_msg)
+            raise TempRequirementError(self.optimal, self.absolute, error_msg)
         return
 
 
