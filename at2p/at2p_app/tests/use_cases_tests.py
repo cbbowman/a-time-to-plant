@@ -1,6 +1,7 @@
-from at2p_app.domain.entities.temperature import TempRange, Temp, TempScale
-from at2p_app.domain.entities.location import Place
 from datetime import datetime
+from at2p_app.domain.entities.location import Place
+from at2p_app.domain.entities.temperature import TempRange, Temp, TempScale
+from at2p_app.domain.use_cases.recommend import Planter, PlanterError
 
 from at2p_app.domain.use_cases.weather import (
     WeatherReport,
@@ -218,3 +219,28 @@ class WeatherReportTest(TestCase):
         self.assertRaises(
             WeatherReportError, WeatherReport.from_dict, bad_dict
         )
+
+
+class TestPlanter(TestCase):
+    def setUp(self) -> None:
+        self.username = "MarkPugner"
+        self.location = Place(zip="22401")
+        self.planter = Planter(username=self.username, location=self.location)
+        return super().setUp()
+
+    def test_creation(self):
+        self.assertIsInstance(self.planter, Planter)
+        self.assertEqual(self.planter.username, self.username)
+        self.assertEqual(self.planter.location, self.location)
+        self.assertIsInstance(self.planter.id, int)
+        self.assertIsInstance(self.planter.crops, list)
+
+    def test_validation_username(self):
+        new_username = 1234
+        self.planter.username = new_username
+        self.assertRaises(PlanterError, self.planter._validate)
+
+    def test_validation_location(self):
+        new_location = "22405"
+        self.planter.location = new_location
+        self.assertRaises(PlanterError, self.planter._validate)

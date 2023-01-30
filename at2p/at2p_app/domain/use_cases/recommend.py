@@ -1,7 +1,9 @@
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from itertools import count
+from typing import List, TypedDict
 from at2p_app.domain.entities.temperature import TempRange
-from typing import TypedDict
+from at2p_app.domain.entities.location import Place
 
 
 class ReqList(TypedDict):
@@ -81,8 +83,10 @@ class TempRequirement(CropRequirement):
 
 @dataclass
 class Crop:
+
     name: str
     reqs: ReqList
+    _id_iter: int = count()
 
     @classmethod
     def from_dict(cls, d):
@@ -92,6 +96,7 @@ class Crop:
         return self.name
 
     def __post_init__(self):
+        self.id = next(self._id_iter)
         self._validate()
 
     def _validate(self):
@@ -113,8 +118,51 @@ class Crop:
                 raise CropError(self.name, self.reqs, error_msg)
 
 
-# class Planter:
-#     username: str
-#     location: Place
+@dataclass
+class PlanterError(Exception):
+    error_msg = "Generic Person Requirements Error"
 
-#     pass
+    def __init__(self, message: str = error_msg) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
+class Planter:
+    username: str
+    location: Place
+    crops: List[Crop] = []
+    _id_iter: int = count()
+
+    def __init__(self, username: str, location: Place) -> None:
+        self.username = username
+        self.location = location
+        self.id = next(self._id_iter)
+
+    def __post_init__(self):
+        self._validate()
+
+    def _validate(self):
+        self._check_username()
+        self._check_location()
+        self._check_crops()
+        self._check_id()
+
+    def _check_username(self):
+        if isinstance(self.username, str):
+            error_msg = "ARGUMENT must be of type 'TYPE'"
+            raise PlanterError(error_msg)
+
+    def _check_location(self):
+        if isinstance(self.location, Place):
+            error_msg = "ARGUMENT must be of type 'TYPE'"
+            raise PlanterError(error_msg)
+
+    def _check_crops(self):
+        if isinstance(self.crops, List):
+            error_msg = "ARGUMENT must be of type 'TYPE'"
+            raise PlanterError(error_msg)
+
+    def _check_id(self):
+        if isinstance(self.id, int):
+            error_msg = "ARGUMENT must be of type 'TYPE'"
+            return PlanterError(error_msg)

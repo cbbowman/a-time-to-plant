@@ -21,7 +21,7 @@ class PlaceError(Exception):
         super().__init__(message)
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(eq=True, slots=True, kw_only=True)
 class Country:
     code: str
     name: str
@@ -30,6 +30,9 @@ class Country:
         self.code = code
         self.__post_init__()
         return
+
+    def __hash__(self) -> int:
+        return hash(self.code)
 
     def __str__(self) -> str:
         return self.name
@@ -61,7 +64,7 @@ class Country:
             raise CountryError(self.code, error_msg)
 
 
-@dataclass
+@dataclass(eq=True)
 class Place:
     zip: str
     country: Country = Country("US")
@@ -73,6 +76,7 @@ class Place:
         return f"{self.zip}, {self.country}"
 
     def __post_init__(self):
+        self.id = hash(f"{self.zip}{self.country}")
         self._validate()
 
     def _validate(self):
