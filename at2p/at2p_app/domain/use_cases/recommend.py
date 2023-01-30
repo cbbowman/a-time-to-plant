@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from at2p_app.domain.entities.weather import TempRange
+from at2p_app.domain.entities.temperature import TempRange
 from typing import TypedDict
 
 
@@ -11,12 +11,13 @@ class ReqList(TypedDict):
 
 @dataclass
 class CropRequirement(ABC):
+    @abstractmethod
     def __post_init__(self) -> None:
-        self._validate()
+        raise NotImplementedError
 
     @abstractmethod
     def _validate(self) -> None:
-        pass
+        raise NotImplementedError
 
 
 @dataclass
@@ -55,15 +56,19 @@ class TempRequirement(CropRequirement):
     absolute: TempRange
     optimal: TempRange
 
-    def _scales_are_correct(self):
-        if self.absolute.scale != self.optimal.scale:
-            error_msg = "Absolute and optimal temp scales must be equal."
-            raise TempRequirementError(self, error_msg)
+    def __post_init__(self) -> None:
+        self._validate()
         return
 
     def _validate(self) -> None:
         self._scales_are_correct()
         self._check_ranges()
+        return
+
+    def _scales_are_correct(self):
+        if self.absolute.scale.value != self.optimal.scale.value:
+            error_msg = "Absolute and optimal temp scales must be equal."
+            raise TempRequirementError(self, error_msg)
         return
 
     def _check_ranges(self):
@@ -112,12 +117,4 @@ class Crop:
 #     username: str
 #     location: Place
 
-#     pass
-
-
-# class Weather:
-#     pass
-
-
-# class Weather:
 #     pass
