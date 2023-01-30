@@ -1,34 +1,43 @@
-from typing import Any, Optional
+from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.text import slugify
 from django_countries.fields import CountryField
 from .static import COUNTRIES_ONLY
 from .scrape import historic_temp, forecast_high_low
-from django.core.exceptions import ValidationError
 import pgeocode
 from django.urls import reverse_lazy
 from math import exp
 
 
 COUNTRIES_ONLY = COUNTRIES_ONLY
-COUNTRIES_FIRST = ['US']
+COUNTRIES_FIRST = ["US"]
+
+
+class CropModel(models.Model):
+    id = models.PositiveSmallIntegerField("Crop ID", primary_key=True)
+    name = models.CharField("Name", max_length=64)
+    abs_low = models.SmallIntegerField("Absolute Low Temperature")
+    abs_high = models.SmallIntegerField("Absolute High Temperature")
+    opt_low = models.SmallIntegerField("Optimal Low Temperature")
+    opt_high = models.SmallIntegerField("Optimal High Temperature")
+    scale = models.CharField("Temperature Scale", max_length=2)
 
 
 class Crop(models.Model):
-    name = models.CharField('Name', max_length=50)
-    min_temp = models.SmallIntegerField('Minimum Temperature')
-    min_opt_temp = models.SmallIntegerField('Optimum Lower Temperature')
-    max_opt_temp = models.SmallIntegerField('Optimum Upper Temperature')
-    max_temp = models.SmallIntegerField('Maximum Temperature')
+    name = models.CharField("Name", max_length=50)
+    min_temp = models.SmallIntegerField("Minimum Temperature")
+    min_opt_temp = models.SmallIntegerField("Optimum Lower Temperature")
+    max_opt_temp = models.SmallIntegerField("Optimum Upper Temperature")
+    max_temp = models.SmallIntegerField("Maximum Temperature")
     slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         return super().save(*args, **kwargs)
 
-    class Meta():
-        ordering = ['name']
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self) -> str:
         return str(self.name)
@@ -37,13 +46,13 @@ class Crop(models.Model):
         return str(self.name)
 
     def get_absolute_url(self):
-        return reverse_lazy('crop-detail', kwargs={'slug': self.slug})
+        return reverse_lazy("crop-detail", kwargs={"slug": self.slug})
 
 
 class Planter(AbstractUser):
-    country = CountryField(default='US', blank=True, null=True)
+    country = CountryField(default="US", blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
-    crops = models.ManyToManyField(Crop, through='TimeToPlant', blank=True)
+    crops = models.ManyToManyField(Crop, through="TimeToPlant", blank=True)
 
     def __str__(self) -> str:
         return str(self.username)
@@ -53,21 +62,23 @@ class Planter(AbstractUser):
 
 
 class WeatherInfo(models.Model):
-    country = CountryField(default='US')
+    country = CountryField(default="US")
     zip = models.CharField(max_length=10)
-    lat = models.DecimalField(max_digits=7, decimal_places=4, blank=True,
-                              null=True)
-    long = models.DecimalField(max_digits=7, decimal_places=4, blank=True,
-                               null=True)
+    lat = models.DecimalField(
+        max_digits=7, decimal_places=4, blank=True, null=True
+    )
+    long = models.DecimalField(
+        max_digits=7, decimal_places=4, blank=True, null=True
+    )
     historic_avg_temp = models.SmallIntegerField(blank=True, null=True)
     forecast_high_temp = models.SmallIntegerField(blank=True, null=True)
     forecast_low_temp = models.SmallIntegerField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.zip + ', ' + self.country.code
+        return self.zip + ", " + self.country.code
 
     def __repr__(self) -> str:
-        return self.zip + ', ' + self.country.code
+        return self.zip + ", " + self.country.code
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.historic_avg_temp = 0
@@ -109,13 +120,13 @@ class TimeToPlant(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-plantable_score', 'crop']
+        ordering = ["-plantable_score", "crop"]
 
     def __str__(self) -> str:
-        return self.planter + "'s " + self.crop
+        return f"{self.planter}'s {self.crop}"
 
     def __repr__(self) -> str:
-        return self.planter + "'s " + self.crop
+        return f"{self.planter}'s {self.crop}"
 
     def update_plantable(self, w):
         mn = self.crop.min_temp

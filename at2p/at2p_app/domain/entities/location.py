@@ -31,9 +31,6 @@ class Country:
         self.__post_init__()
         return
 
-    def __hash__(self) -> int:
-        return hash(self.code)
-
     def __str__(self) -> str:
         return self.name
 
