@@ -6,7 +6,7 @@ from at2p_app.domain.entities.crop import (
 )
 from at2p_app.domain.entities.temperature import TempRange
 from at2p_app.adapters.repositories import TestingCropRepo
-from at2p_app.domain.use_cases.crop_use_cases import CropInterface
+from at2p_app.domain.use_cases.crop_interface import CropInterface
 
 
 class TestCropInterface(TestCase):

@@ -83,8 +83,8 @@ class TempRange:
         return cls(**d)
 
     def __init__(self, low, high, scale=TempScale.F) -> None:
-        self.low = low
-        self.high = high
+        self.low = int(round(low))
+        self.high = int(round(high))
         self.scale = scale
         self.__post_init__()
 

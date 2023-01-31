@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from at2p_app.domain.entities.lat_long import LatLong
+from at2p_app.domain.entities.weather import WeatherReport
 
 COUNTRIES = {"US": "United States"}
 COUNTRY_CODE_LENGTH = 2
@@ -68,6 +69,8 @@ class Place:
     state: str = None
     city: str = None
     coord: LatLong = None
+    forecast: WeatherReport = None
+    historic: WeatherReport = None
 
     def __str__(self) -> str:
         return f"{self.zip}, {self.country}"

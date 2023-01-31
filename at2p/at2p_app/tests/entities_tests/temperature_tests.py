@@ -64,7 +64,7 @@ class TestTemp(TestCase):
 
 class TestTempRange(TestCase):
     def setUp(self) -> None:
-        self.low = 1.0
+        self.low = 1
         self.high = 100
         self.tr = TempRange(low=self.low, high=self.high)
         return super().setUp()

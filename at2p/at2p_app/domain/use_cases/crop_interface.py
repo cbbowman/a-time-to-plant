@@ -3,7 +3,7 @@ from at2p_app.domain.entities.temperature import TempRange
 from at2p_app.domain.entities.crop import TempRequirement, ReqList
 from at2p_app.adapters.repositories import CropRepo
 
-CROP_LIST_CSV = "at2p_app/static/crops_and_temps.csv"
+CROP_LIST_CSV = "at2p/at2p_app/static/crops_and_temps.csv"
 
 
 class CropInterface:
@@ -30,6 +30,7 @@ class CropInterface:
         imported_crops = []
         with open(source, encoding="UTF-8") as f:
             reader = csv.reader(f)
+            i = 1
             for row in reader:
                 abs_min = int(row[1])
                 opt_min = int(row[2])
@@ -40,9 +41,11 @@ class CropInterface:
                 tr = TempRequirement(absolute=abs, optimal=opt)
                 reqs = ReqList(temp=tr)
                 init_dict = {
+                    "id": i,
                     "name": row[0],
                     "reqs": reqs,
                 }
                 new_crop = self._crop_repo.create(init_dict)
                 imported_crops.append(new_crop)
+                i += 1
         return imported_crops

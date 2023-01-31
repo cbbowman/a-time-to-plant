@@ -8,8 +8,8 @@ from at2p_app.domain.entities.crop import Crop
 
 @dataclass(eq=True)
 class Confidence(Enum):
-    LOW = 85
-    MODERATE = 95
+    LOW = 95
+    MODERATE = 98
     HIGH = 100
 
     def __str__(self):
