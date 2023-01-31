@@ -18,7 +18,7 @@ class CropRepo(ABC):
         pass
 
     @abstractmethod
-    def update(self, crop: Crop):
+    def save(self, crop: Crop):
         pass
 
     @abstractmethod
@@ -54,7 +54,7 @@ class TestingCropRepo(CropRepo):
         self.crop.id = crop_id
         return self.crop
 
-    def update(self, crop: Crop):
+    def save(self, crop: Crop):
         return
 
     def delete(self, crop_id):
@@ -93,9 +93,12 @@ class DjangoCropRepo(CropRepo):
         crop_initdict = {"id": crop_id, "name": crop_name, "reqs": reqs}
         return Crop.from_dict(crop_initdict)
 
-    def update(self, crop: Crop) -> None:
+    def save(self, crop: Crop) -> None:
         temp_req = crop.reqs["temp"]
-        model_crop = self.get(crop_id=crop.id)
+        crop_query = CropModel.objects.filter(id=crop.id)
+        if not len(crop_query) > 0:
+            raise CropRepoError()
+        model_crop = crop_query[0]
         model_crop.name = crop.name
         model_crop.abs_low = temp_req.absolute.low
         model_crop.abs_high = temp_req.absolute.high
@@ -106,4 +109,8 @@ class DjangoCropRepo(CropRepo):
         return
 
     def delete(self, crop_id) -> None:
+        crop_query = CropModel.objects.filter(id=crop_id)
+        if not len(crop_query) > 0:
+            raise CropRepoError()
+        crop_query[0].delete()
         return

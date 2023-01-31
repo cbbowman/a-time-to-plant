@@ -11,11 +11,7 @@ from at2p_app.domain.entities.temperature import TempRange, Temp, TempScale
 
 class TestTempReq(TestCase):
     def setUp(self) -> None:
-        self.absolute = TempRange(10, 100)
-        self.optimal = TempRange(50, 60)
-        self.temp_req = TempRequirement(
-            absolute=self.absolute, optimal=self.optimal
-        )
+        self.temp_req = TempRequirement()
         return super().setUp()
 
     def test_create_temp_req_list(self):
@@ -26,7 +22,6 @@ class TestTempReq(TestCase):
         self.assertRaises(
             TempRequirementError,
             TempRequirement,
-            absolute=self.absolute,
             optimal=range_in_C,
         )
 
@@ -70,9 +65,7 @@ class TestReqList(TestCase):
 
 class TestCrop(TestCase):
     def setUp(self) -> None:
-        opt = TempRange(30, 50)
-        abs = TempRange(10, 100)
-        req = TempRequirement(absolute=abs, optimal=opt)
+        req = TempRequirement()
         self.reqs = ReqList(temp=req)
         self.crop_name = "Boberries"
         self.crop = Crop(name=self.crop_name, reqs=self.reqs)
@@ -99,7 +92,9 @@ class TestCrop(TestCase):
         self.assertRaises(CropError, Crop.from_dict, initdict)
 
     def test_str(self) -> None:
-        self.assertEqual(self.crop.__str__(), f"{self.crop.name}[{self.crop.id}]")
+        self.assertEqual(
+            self.crop.__str__(), f"{self.crop.name}[{self.crop.id}]"
+        )
 
     def test_reqs(self) -> None:
         self.assertEqual(self.crop.reqs, self.reqs)

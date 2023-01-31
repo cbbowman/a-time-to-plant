@@ -93,7 +93,7 @@ class TempRange:
 
     def _validate(self) -> None:
         if self.low > self.high:
-            error_msg = "'Low' may not be greater than 'high'"
+            error_msg = "'Low' may not be greater than 'High'"
             raise TempRangeError(self.low, self.high, self.scale, error_msg)
 
     def __str__(self) -> str:
@@ -110,6 +110,6 @@ class TempRange:
             raise TempRangeError(self.low, self.high, self.scale, msg)
 
         if isinstance(t, Temp):
-            return (self.low < t.value) and (self.high > t.value)
+            return (self.low <= t.value) and (self.high >= t.value)
         else:
-            return (self.low < t.low) and (self.high > t.high)
+            return (self.low <= t.low) and (self.high >= t.high)

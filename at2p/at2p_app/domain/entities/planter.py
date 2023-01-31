@@ -17,13 +17,15 @@ class PlanterError(Exception):
 class Planter:
     username: str
     location: Place
+    id: int = None
     crops: List[Crop] = []
-    _id_iter: int = count()
 
     def __init__(self, username: str, location: Place) -> None:
         self.username = username
         self.location = location
-        self.id = next(self._id_iter)
+        if self.id is None:
+            self.id = hash(username)
+        self.__post_init__()
 
     def __post_init__(self):
         self._validate()
@@ -35,21 +37,21 @@ class Planter:
         self._check_id()
 
     def _check_username(self):
-        if isinstance(self.username, str):
+        if not isinstance(self.username, str):
             error_msg = "ARGUMENT must be of type 'TYPE'"
             raise PlanterError(error_msg)
 
     def _check_location(self):
-        if isinstance(self.location, Place):
+        if not isinstance(self.location, Place):
             error_msg = "ARGUMENT must be of type 'TYPE'"
             raise PlanterError(error_msg)
 
     def _check_crops(self):
-        if isinstance(self.crops, List):
+        if not isinstance(self.crops, List):
             error_msg = "ARGUMENT must be of type 'TYPE'"
             raise PlanterError(error_msg)
 
     def _check_id(self):
-        if isinstance(self.id, int):
+        if not isinstance(self.id, int):
             error_msg = "ARGUMENT must be of type 'TYPE'"
-            return PlanterError(error_msg)
+            raise PlanterError(error_msg)

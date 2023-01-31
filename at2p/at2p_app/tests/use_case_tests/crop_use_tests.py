@@ -37,8 +37,13 @@ class TestCropInterface(TestCase):
         self.assertIsInstance(crop, Crop)
         self.assertEqual(crop.id, self.crop_id)
 
-    def test_update_a_crop(self):
-        self.assertIsNone(self.interface.update_crop(self.crop))
+    def test_save_a_crop(self):
+        self.assertIsNone(self.interface.save_crop(self.crop))
 
     def test_delete_a_crop(self):
         self.assertIsNone(self.interface.delete_crop(self.crop))
+
+    def test_import_crops(self):
+        crops = self.interface.import_crops()
+        for c in crops:
+            self.assertIsInstance(c, Crop)

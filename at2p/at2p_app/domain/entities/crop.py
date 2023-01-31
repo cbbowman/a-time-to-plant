@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
-from itertools import count
 from typing import TypedDict
 from at2p_app.domain.entities.temperature import TempRange
 
@@ -55,47 +54,10 @@ class TempRequirementError(CropRequirementError):
 
 
 @dataclass
-class Crop:
-    name: str
-    reqs: ReqList
-    id: int = None
-    _id_iter: int = count()
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls(**d)
-
-    def __str__(self) -> str:
-        return f"{self.name}[{self.id}]"
-
-    def __post_init__(self):
-        self.id = next(self._id_iter)
-        self._validate()
-
-    def _validate(self):
-        error_msg = "Crop name must be a string!"
-        if not isinstance(self.name, str):
-            raise CropError(self.name, self.reqs, error_msg)
-
-        error_msg = "Crop name may not be blank"
-        if not len(self.name) > 0:
-            raise CropError(self.name, self.reqs, error_msg)
-
-        error_msg = "Crop requirements must be a dictionary!"
-        if not isinstance(self.reqs, dict):
-            raise CropError(self.name, self.reqs, error_msg)
-
-        error_msg = "Crop reqs must be a CropRequirement"
-        for key in self.reqs:
-            if not isinstance(self.reqs[key], CropRequirement):
-                raise CropError(self.name, self.reqs, error_msg)
-
-
-@dataclass
 class TempRequirement(CropRequirement):
 
-    absolute: TempRange
-    optimal: TempRange
+    absolute: TempRange = TempRange(10, 90)
+    optimal: TempRange = TempRange(30, 50)
 
     def __post_init__(self) -> None:
         self._validate()
@@ -118,3 +80,40 @@ class TempRequirement(CropRequirement):
             error_msg = "Absolute and optimal ranges are incorrect"
             raise TempRequirementError(self.optimal, self.absolute, error_msg)
         return
+
+
+@dataclass
+class Crop:
+    name: str
+    reqs: ReqList
+    id: int = None
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
+
+    def __str__(self) -> str:
+        return f"{self.name}[{self.id}]"
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = hash(self.name)
+        self._validate()
+
+    def _validate(self):
+        error_msg = "Crop name must be a string!"
+        if not isinstance(self.name, str):
+            raise CropError(self.name, self.reqs, error_msg)
+
+        error_msg = "Crop name may not be blank"
+        if not len(self.name) > 0:
+            raise CropError(self.name, self.reqs, error_msg)
+
+        error_msg = "Crop requirements must be a dictionary!"
+        if not isinstance(self.reqs, dict):
+            raise CropError(self.name, self.reqs, error_msg)
+
+        error_msg = "Crop reqs must be a CropRequirement"
+        for key in self.reqs:
+            if not isinstance(self.reqs[key], CropRequirement):
+                raise CropError(self.name, self.reqs, error_msg)

@@ -5,6 +5,7 @@ from at2p_app.domain.entities.planter import Planter, PlanterError
 
 class TestPlanter(TestCase):
     def setUp(self) -> None:
+        self.id = 73
         self.username = "MarkPugner"
         self.location = Place(zip="22401")
         self.planter = Planter(username=self.username, location=self.location)
@@ -25,4 +26,14 @@ class TestPlanter(TestCase):
     def test_validation_location(self):
         new_location = "22405"
         self.planter.location = new_location
+        self.assertRaises(PlanterError, self.planter._validate)
+
+    def test_validation_crops(self):
+        new_crops = "22405"
+        self.planter.crops = new_crops
+        self.assertRaises(PlanterError, self.planter._validate)
+
+    def test_validation_id(self):
+        new_id = "22405"
+        self.planter.id = new_id
         self.assertRaises(PlanterError, self.planter._validate)
