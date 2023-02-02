@@ -6,10 +6,9 @@ from at2p_app.domain.entities.planter import Planter, PlanterError
 
 class TestPlanter(TestCase):
     def setUp(self) -> None:
-        self.id = 73
         self.username = "MarkPugner"
-        self.location = Place(ZipCode.new("22401"))
-        self.planter = Planter(username=self.username, location=self.location)
+        self.location = Place.new(ZipCode.new("22401"))
+        self.planter = Planter.new(username=self.username, location=self.location)
         return super().setUp()
 
     def test_creation(self):
@@ -21,20 +20,8 @@ class TestPlanter(TestCase):
 
     def test_validation_username(self):
         new_username = 1234
-        self.planter.username = new_username
-        self.assertRaises(PlanterError, self.planter._validate)
+        self.assertRaises(PlanterError, self.planter.change_username, new_username)
 
     def test_validation_location(self):
         new_location = "22405"
-        self.planter.location = new_location
-        self.assertRaises(PlanterError, self.planter._validate)
-
-    def test_validation_crops(self):
-        new_crops = "22405"
-        self.planter.crops = new_crops
-        self.assertRaises(PlanterError, self.planter._validate)
-
-    def test_validation_id(self):
-        new_id = "22405"
-        self.planter.id = new_id
-        self.assertRaises(PlanterError, self.planter._validate)
+        self.assertRaises(PlanterError, self.planter.change_location, new_location)

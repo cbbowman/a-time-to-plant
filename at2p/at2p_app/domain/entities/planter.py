@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import List
 from at2p_app.domain.entities.place import Place
-from at2p_app.domain.entities.crop import Crop
+from uuid import uuid4
 
 
 @dataclass
@@ -13,44 +12,42 @@ class PlanterError(Exception):
         super().__init__(self.message)
 
 
+@dataclass
 class Planter:
-    id: int = None
+    id: int
     username: str
     location: Place
-    crops: List[Crop] = []
+    crops: list
 
-    def __init__(self, username: str, location: Place) -> None:
-        self.username = username
-        self.location = location
-        if self.id is None:
-            self.id = hash(username)
-        self.__post_init__()
+    @classmethod
+    def new(cls, username: str, location: Place):
+        username, location = cls._validate(username, location)
+        return cls(uuid4().int, username, location, [])
 
-    def __post_init__(self):
-        self._validate()
+    @classmethod
+    def _validate(cls, username, location):
+        cls._check_username(username)
+        cls._check_location(location)
+        return username, location
 
-    def _validate(self):
-        self._check_username()
-        self._check_location()
-        self._check_crops()
-        self._check_id()
-
-    def _check_username(self):
-        if not isinstance(self.username, str):
+    @classmethod
+    def _check_username(cls, username):
+        if not isinstance(username, str):
             error_msg = "username must be of type 'string'"
             raise PlanterError(error_msg)
 
-    def _check_location(self):
-        if not isinstance(self.location, Place):
+    @classmethod
+    def _check_location(cls, location):
+        if not isinstance(location, Place):
             error_msg = "location must be of type 'Place'"
             raise PlanterError(error_msg)
 
-    def _check_crops(self):
-        if not isinstance(self.crops, List):
-            error_msg = "crops must be of type 'List'"
-            raise PlanterError(error_msg)
+    def change_username(self, username):
+        self.__class__._check_username(username)
+        self.username = username
+        return
 
-    def _check_id(self):
-        if not isinstance(self.id, int):
-            error_msg = "id must be of type 'int'"
-            raise PlanterError(error_msg)
+    def change_location(self, location):
+        self.__class__._check_location(location)
+        self.location = location
+        return

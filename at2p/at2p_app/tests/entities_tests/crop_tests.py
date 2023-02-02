@@ -15,7 +15,6 @@ class TestCrop(TestCase):
 
     def test_create_from_dict(self):
         initdict = {
-            "id": 73,
             "name": "Boberries",
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
@@ -33,7 +32,6 @@ class TestCrop(TestCase):
 
     def test_validation(self):
         initdict = {
-            "id": 73,
             "name": "",
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
@@ -41,7 +39,6 @@ class TestCrop(TestCase):
         self.assertRaises(CropError, Crop.from_dict, initdict)
 
         initdict = {
-            "id": 73,
             "name": 12,
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),

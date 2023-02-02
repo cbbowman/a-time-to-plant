@@ -13,9 +13,7 @@ class TestDjangoRepo(TestCase):
         self.opt_range = TempRange.new(30, 50)
         self.abs_range = TempRange.new(10, 100)
         self.crop_name = "Boberries"
-        self.crop_id = 73
         self.crop_initdict = {
-            "id": self.crop_id,
             "name": self.crop_name,
             "opt_range": self.opt_range,
             "abs_range": self.abs_range,
@@ -29,7 +27,7 @@ class TestDjangoRepo(TestCase):
 
     def test_create_crop(self):
         crop_id = self.repo.create(self.crop_initdict)
-        self.assertEqual(crop_id, self.crop_id)
+        self.assertEqual(crop_id, self.crop.id)
 
     def test_get_crop(self):
         crop_id = self.repo.create(self.crop_initdict)

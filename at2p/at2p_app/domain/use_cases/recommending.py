@@ -23,4 +23,6 @@ class CropRecommender:
         optimal_margin = min(opt_max - avg, avg - opt_min)
         margin = min(absolute_margin, optimal_margin)
         recommended = margin > 0
-        return Recommendation.new(crop, recommended, Temperature.new(margin))
+        return Recommendation.new(
+            self._weather.location, crop, recommended, Temperature.new(margin)
+        )

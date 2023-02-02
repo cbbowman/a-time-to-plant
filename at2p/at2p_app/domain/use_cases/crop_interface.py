@@ -38,7 +38,6 @@ class CropInterface:
                 abs_range = TempRange.new(abs_min, abs_max)
                 opt_range = TempRange.new(opt_min, opt_max)
                 init_dict = {
-                    "id": i,
                     "name": row[0],
                     "abs_range": abs_range,
                     "opt_range": opt_range

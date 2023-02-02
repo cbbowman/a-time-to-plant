@@ -38,7 +38,6 @@ class TestingCropRepo(CropRepo):
         self.abs_range = TempRange.new(10, 100)
         self.crop_name = "Boberries"
         self.crop_initdict = {
-            "id": 73,
             "name": self.crop_name,
             "opt_range": self.opt_range,
             "abs_range": self.abs_range,
@@ -50,7 +49,6 @@ class TestingCropRepo(CropRepo):
         return Crop.from_dict(crop_initdict)
 
     def get(self, crop_id):
-        self.crop_initdict["id"] = crop_id
         return Crop.from_dict(self.crop_initdict)
 
     def save(self, crop: Crop):
@@ -86,7 +84,6 @@ class DjangoCropRepo(CropRepo):
         opt_range = TempRange.new(crop_model.opt_low, crop_model.opt_high)
         abs_range = TempRange.new(crop_model.abs_low, crop_model.abs_high)
         crop_initdict = {
-            "id": crop_id,
             "name": crop_name,
             "opt_range": opt_range,
             "abs_range": abs_range,

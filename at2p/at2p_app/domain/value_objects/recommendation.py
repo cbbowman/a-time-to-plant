@@ -3,6 +3,7 @@ from datetime import datetime
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.common.base import ValueObject
 from at2p_app.domain.value_objects.temperature import Temperature
+from at2p_app.domain.entities.place import Place
 
 
 class RecommendationError(Exception):
@@ -14,18 +15,26 @@ class RecommendationError(Exception):
 
 @dataclass(frozen=True)
 class Recommendation(ValueObject):
+    place: Place
     crop: Crop
     recommended: bool
     margin: Temperature
     time_stamp: datetime
 
     @classmethod
-    def new(cls, crop: Crop, recommended: bool, margin: Temperature):
-        crop, recommended, margin = cls._validate(crop, recommended, margin)
-        return cls(crop, recommended, margin, datetime.now())
+    def new(
+        cls, place: Place, crop: Crop, recommended: bool, margin: Temperature
+    ):
+        place, crop, recommended, margin = cls._validate(
+            place, crop, recommended, margin
+        )
+        return cls(place, crop, recommended, margin, datetime.now())
 
     @classmethod
-    def _validate(cls, crop: Crop, recommended: bool, margin: Temperature):
+    def _validate(cls, place: Place, crop: Crop, recommended: bool, margin: Temperature):
+        if not isinstance(place, Place):
+            error_msg = "Place must be a Place!"
+            raise RecommendationError(error_msg=error_msg)
         if not isinstance(crop, Crop):
             error_msg = "Crop must be a Crop!"
             raise RecommendationError(error_msg=error_msg)
@@ -35,10 +44,10 @@ class Recommendation(ValueObject):
         if not isinstance(margin, Temperature):
             error_msg = "Margin must be a temperature!"
             raise RecommendationError(error_msg=error_msg)
-        return crop, recommended, margin
+        return place, crop, recommended, margin
 
     @classmethod
-    def _clean(cls, code: str):
+    def _clean(cls):
         return
 
     def __str__(self) -> str:

@@ -8,7 +8,6 @@ from at2p_app.domain.use_cases.crop_interface import CropInterface
 class TestCropInterface(TestCase):
     def setUp(self) -> None:
         self.initdict = {
-            "id": 73,
             "name": "Boberries",
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
@@ -26,12 +25,10 @@ class TestCropInterface(TestCase):
     def test_create_a_crop(self):
         crop = self.interface.create_crop(self.initdict)
         self.assertIsInstance(crop, Crop)
-        self.assertEqual(crop.id, self.crop.id)
 
     def test_get_a_crop(self):
         crop = self.interface.get_crop(self.crop_id)
         self.assertIsInstance(crop, Crop)
-        self.assertEqual(crop.id, self.crop.id)
 
     def test_save_a_crop(self):
         self.assertIsNone(self.interface.save_crop(self.crop))

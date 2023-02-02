@@ -11,7 +11,7 @@ from at2p_app.domain.entities.crop import Crop
 class RecommendationTests(TestCase):
     def setUp(self) -> None:
         self.zip = ZipCode.new("22407")
-        self.place = Place(zip=self.zip)
+        self.place = Place.new(zip_code=self.zip)
 
         self.crop = Crop(
             id=73,
@@ -20,7 +20,7 @@ class RecommendationTests(TestCase):
             opt_range=TempRange.new(65, 75),
         )
 
-        self.r = Recommendation.new(self.crop, True, Temperature.new(40))
+        self.r = Recommendation.new(self.place, self.crop, True, Temperature.new(40))
         return super().setUp()
 
     def test_instantiation(self):

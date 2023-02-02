@@ -93,3 +93,13 @@ class TempRange(ValueObject):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+    def includes_temp(self, t: Temperature):
+        if not isinstance(t, Temperature):
+            raise TemperatureError()
+        return self.min < t and t < self.max
+
+    def includes_range(self, r):
+        if not isinstance(r, TempRange):
+            raise TemperatureError()
+        return not (r.max > self.max or self.min > r.min)
