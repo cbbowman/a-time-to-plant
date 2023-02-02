@@ -1,5 +1,6 @@
 from django.test import TestCase
-from at2p_app.domain.entities.location import Place
+from at2p_app.domain.entities.place import Place
+from at2p_app.domain.value_objects.location import ZipCode
 from at2p_app.domain.entities.planter import Planter, PlanterError
 
 
@@ -7,7 +8,7 @@ class TestPlanter(TestCase):
     def setUp(self) -> None:
         self.id = 73
         self.username = "MarkPugner"
-        self.location = Place(zip="22401")
+        self.location = Place(ZipCode.new("22401"))
         self.planter = Planter(username=self.username, location=self.location)
         return super().setUp()
 

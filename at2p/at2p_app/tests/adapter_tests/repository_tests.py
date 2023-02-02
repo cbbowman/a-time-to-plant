@@ -4,22 +4,21 @@ from at2p_app.adapters.repositories import (
     CropRepoError,
 )
 from django.test import TestCase
-from at2p_app.domain.entities.crop import Crop, ReqList, TempRequirement
-from at2p_app.domain.entities.temperature import TempRange
+from at2p_app.domain.entities.crop import Crop
+from at2p_app.domain.value_objects.temperature import TempRange
 
 
 class TestDjangoRepo(TestCase):
     def setUp(self) -> None:
-        opt = TempRange(30, 50)
-        abs = TempRange(10, 100)
-        req = TempRequirement(absolute=abs, optimal=opt)
-        self.reqs = ReqList(temp=req)
+        self.opt_range = TempRange.new(30, 50)
+        self.abs_range = TempRange.new(10, 100)
         self.crop_name = "Boberries"
         self.crop_id = 73
         self.crop_initdict = {
             "id": self.crop_id,
             "name": self.crop_name,
-            "reqs": self.reqs,
+            "opt_range": self.opt_range,
+            "abs_range": self.abs_range,
         }
         self.repo = DjangoCropRepo()
         self.crop = Crop.from_dict(self.crop_initdict)

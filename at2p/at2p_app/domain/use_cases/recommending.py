@@ -1,102 +1,26 @@
-from abc import ABC, abstractmethod
-from typing import List
-from datetime import datetime
-from at2p_app.domain.entities.temperature import Temp, TempRange
-from at2p_app.domain.entities.location import Place
-from at2p_app.domain.entities.crop import (
-    Crop,
-    TempRequirement,
-)
-from at2p_app.domain.entities.weather import WeatherReport
-from at2p_app.domain.entities.recommendation import Recommendation, Confidence
+from at2p_app.domain.value_objects.recommendation import Recommendation
+from at2p_app.domain.value_objects.temperature import Temperature
+from at2p_app.domain.value_objects.weather import Weather
+from at2p_app.domain.entities.crop import Crop
 
 
-class RequirementChecker(ABC):
-    @abstractmethod
-    def check_requirements(self):
-        pass
+class CropRecommender:
+    def __init__(self, weather: Weather) -> None:
+        self._weather = weather
 
+    def crop(self, crop: Crop) -> Recommendation:
 
-class TempReqChecker(RequirementChecker):
-    def __init__(
-        self,
-        reqs: TempRequirement,
-        conf: Confidence = Confidence.HIGH,
-    ) -> None:
-        self.reqs = reqs
-        self.conf = (100 - conf.value) / 100
+        low = self._weather.low
+        high = self._weather.high
+        avg = self._weather.avg
 
-    def check_requirements(
-        self, forecast: WeatherReport, historic: WeatherReport
-    ):
-        forecast_ok = self.check_forecast(forecast)
-        historic_ok = self.check_historic(historic)
-        return forecast_ok and historic_ok
+        abs_max = crop.abs_range.max
+        abs_min = crop.abs_range.min
+        opt_min = crop.opt_range.min
+        opt_max = crop.opt_range.max
 
-    def check_forecast(self, forecast: WeatherReport):
-        adjusted_range = TempRange(
-            self.reqs.optimal.low * (1 - self.conf),
-            self.reqs.optimal.high * (1 + self.conf),
-        )
-        high_ok = self.reqs.absolute.high > forecast.highs.high
-        low_ok = self.reqs.absolute.low < forecast.lows.low
-        forecast_avg = Temp((forecast.highs.low + forecast.lows.high) / 2)
-        optimal_ok = adjusted_range.includes(forecast_avg)
-        crop_ok_to_plant = high_ok and low_ok and optimal_ok
-        return crop_ok_to_plant
-
-    def check_historic(
-        self,
-        historic: WeatherReport,
-    ):
-        adjusted_range = TempRange(
-            self.reqs.optimal.low * (1 - self.conf),
-            self.reqs.optimal.high * (1 + self.conf),
-        )
-        optimal_ok = adjusted_range.includes(historic.average)
-        return optimal_ok
-
-
-class CropRecommender(ABC):
-    @abstractmethod
-    def recommend_crops(self):
-        raise NotImplementedError
-
-
-class TempBasedRecommender(CropRecommender):
-    def check_crop(
-        self,
-        crop: Crop,
-        here: Place,
-        confidence: Confidence = Confidence.HIGH,
-    ) -> bool:
-        checker = TempReqChecker(crop.reqs.get("temp"), confidence)
-        crop_ok_to_plant = checker.check_requirements(
-            here.forecast, here.historic
-        )
-        return crop_ok_to_plant
-
-    def recommend_crops(
-        self,
-        crop_list: List[Crop],
-        here: Place,
-        confidence: Confidence = Confidence.HIGH,
-    ) -> list:
-        recommended_crops = []
-        for c in crop_list:
-            ok_to_plant = self.check_crop(
-                c,
-                here,
-                confidence,
-            )
-            if ok_to_plant:
-                print(c)
-                print(here.forecast)
-                print(here.historic)
-                recommended_crops.append(c)
-        return Recommendation(
-            location=here,
-            crops=tuple(crop_list),
-            confidence=confidence,
-            time_stamp=datetime.now(),
-        )
+        absolute_margin = min(abs_max - high, low - abs_min)
+        optimal_margin = min(opt_max - avg, avg - opt_min)
+        margin = min(absolute_margin, optimal_margin)
+        recommended = margin > 0
+        return Recommendation.new(crop, recommended, Temperature.new(margin))

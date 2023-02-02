@@ -21,7 +21,6 @@ class CropModel(models.Model):
     abs_high = models.SmallIntegerField("Absolute High Temperature")
     opt_low = models.SmallIntegerField("Optimal Low Temperature")
     opt_high = models.SmallIntegerField("Optimal High Temperature")
-    scale = models.CharField("Temperature Scale", max_length=2)
 
 
 class Crop(models.Model):

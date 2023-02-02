@@ -1,23 +1,19 @@
 from django.test import TestCase
-from at2p_app.domain.entities.crop import (
-    Crop,
-    TempRequirement,
-    ReqList,
-)
-from at2p_app.domain.entities.temperature import TempRange
+from at2p_app.domain.entities.crop import Crop
+from at2p_app.domain.value_objects.temperature import TempRange
 from at2p_app.adapters.repositories import TestingCropRepo
 from at2p_app.domain.use_cases.crop_interface import CropInterface
 
 
 class TestCropInterface(TestCase):
     def setUp(self) -> None:
-        opt = TempRange(30, 50)
-        abs = TempRange(10, 100)
-        req = TempRequirement(absolute=abs, optimal=opt)
-        self.reqs = ReqList(temp=req)
-        self.crop_name = "Boberries"
-        self.crop_initdict = {"name": self.crop_name, "reqs": self.reqs}
-        self.crop = Crop.from_dict(self.crop_initdict)
+        self.initdict = {
+            "id": 73,
+            "name": "Boberries",
+            "abs_range": TempRange.new(40, 80),
+            "opt_range": TempRange.new(65, 75),
+        }
+        self.crop = Crop.from_dict(self.initdict)
         self.crop_id = self.crop.id
 
         self.repo = TestingCropRepo()
@@ -28,14 +24,14 @@ class TestCropInterface(TestCase):
         self.assertIsInstance(self.interface, CropInterface)
 
     def test_create_a_crop(self):
-        crop = self.interface.create_crop(self.crop_initdict)
+        crop = self.interface.create_crop(self.initdict)
         self.assertIsInstance(crop, Crop)
-        self.assertEqual(crop.name, self.crop_name)
+        self.assertEqual(crop.id, self.crop.id)
 
     def test_get_a_crop(self):
         crop = self.interface.get_crop(self.crop_id)
         self.assertIsInstance(crop, Crop)
-        self.assertEqual(crop.id, self.crop_id)
+        self.assertEqual(crop.id, self.crop.id)
 
     def test_save_a_crop(self):
         self.assertIsNone(self.interface.save_crop(self.crop))

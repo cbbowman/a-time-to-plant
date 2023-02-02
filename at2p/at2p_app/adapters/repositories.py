@@ -1,10 +1,6 @@
 from abc import ABC, abstractmethod
-from at2p_app.domain.entities.temperature import TempRange
-from at2p_app.domain.entities.crop import (
-    Crop,
-    TempRequirement,
-    ReqList,
-)
+from at2p_app.domain.value_objects.temperature import TempRange
+from at2p_app.domain.entities.crop import Crop
 from at2p_app.models import CropModel
 
 
@@ -38,12 +34,15 @@ class TestingCropRepo(CropRepo):
     def __init__(
         self,
     ) -> None:
-        opt = TempRange(30, 50)
-        abs = TempRange(10, 100)
-        req = TempRequirement(absolute=abs, optimal=opt)
-        self.reqs = ReqList(temp=req)
+        self.opt_range = TempRange.new(30, 50)
+        self.abs_range = TempRange.new(10, 100)
         self.crop_name = "Boberries"
-        self.crop_initdict = {"name": self.crop_name, "reqs": self.reqs}
+        self.crop_initdict = {
+            "id": 73,
+            "name": self.crop_name,
+            "opt_range": self.opt_range,
+            "abs_range": self.abs_range,
+        }
         self.crop = Crop.from_dict(self.crop_initdict)
         super().__init__()
 
@@ -51,8 +50,8 @@ class TestingCropRepo(CropRepo):
         return Crop.from_dict(crop_initdict)
 
     def get(self, crop_id):
-        self.crop.id = crop_id
-        return self.crop
+        self.crop_initdict["id"] = crop_id
+        return Crop.from_dict(self.crop_initdict)
 
     def save(self, crop: Crop):
         return
@@ -64,17 +63,15 @@ class TestingCropRepo(CropRepo):
 class DjangoCropRepo(CropRepo):
     def create(self, initdict) -> int:
         crop = Crop.from_dict(initdict)
-        reqs = crop.reqs.get("temp")
-        absolute = reqs.absolute
-        optimal = reqs.optimal
+        absolute = crop.abs_range
+        optimal = crop.opt_range
         crop_model = CropModel(
             id=crop.id,
             name=crop.name,
-            abs_low=absolute.low,
-            abs_high=absolute.high,
-            opt_low=optimal.low,
-            opt_high=optimal.high,
-            scale=absolute.scale,
+            abs_low=absolute.min.temp,
+            abs_high=absolute.max.temp,
+            opt_low=optimal.min.temp,
+            opt_high=optimal.max.temp,
         )
         crop_model.save()
         return crop_model.id
@@ -86,25 +83,26 @@ class DjangoCropRepo(CropRepo):
         crop_model = crop_query[0]
         crop_id = crop_model.id
         crop_name = crop_model.name
-        opt = TempRange(crop_model.opt_low, crop_model.opt_high)
-        abs = TempRange(crop_model.abs_low, crop_model.abs_high)
-        req = TempRequirement(absolute=abs, optimal=opt)
-        reqs = ReqList(temp=req)
-        crop_initdict = {"id": crop_id, "name": crop_name, "reqs": reqs}
+        opt_range = TempRange.new(crop_model.opt_low, crop_model.opt_high)
+        abs_range = TempRange.new(crop_model.abs_low, crop_model.abs_high)
+        crop_initdict = {
+            "id": crop_id,
+            "name": crop_name,
+            "opt_range": opt_range,
+            "abs_range": abs_range,
+        }
         return Crop.from_dict(crop_initdict)
 
     def save(self, crop: Crop) -> None:
-        temp_req = crop.reqs["temp"]
         crop_query = CropModel.objects.filter(id=crop.id)
         if not len(crop_query) > 0:
             raise CropRepoError()
         model_crop = crop_query[0]
         model_crop.name = crop.name
-        model_crop.abs_low = temp_req.absolute.low
-        model_crop.abs_high = temp_req.absolute.high
-        model_crop.opt_low = temp_req.optimal.low
-        model_crop.opt_high = temp_req.optimal.high
-        model_crop.scale = temp_req.absolute.scale
+        model_crop.abs_low = crop.abs_range.min.temp
+        model_crop.abs_high = crop.abs_range.max.temp
+        model_crop.opt_low = crop.opt_range.min.temp
+        model_crop.opt_high = crop.opt_range.max.temp
         model_crop.save()
         return
 

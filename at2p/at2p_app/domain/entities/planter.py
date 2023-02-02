@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from itertools import count
 from typing import List
-from at2p_app.domain.entities.location import Place
+from at2p_app.domain.entities.place import Place
 from at2p_app.domain.entities.crop import Crop
 
 
@@ -15,9 +14,9 @@ class PlanterError(Exception):
 
 
 class Planter:
+    id: int = None
     username: str
     location: Place
-    id: int = None
     crops: List[Crop] = []
 
     def __init__(self, username: str, location: Place) -> None:
@@ -38,20 +37,20 @@ class Planter:
 
     def _check_username(self):
         if not isinstance(self.username, str):
-            error_msg = "ARGUMENT must be of type 'TYPE'"
+            error_msg = "username must be of type 'string'"
             raise PlanterError(error_msg)
 
     def _check_location(self):
         if not isinstance(self.location, Place):
-            error_msg = "ARGUMENT must be of type 'TYPE'"
+            error_msg = "location must be of type 'Place'"
             raise PlanterError(error_msg)
 
     def _check_crops(self):
         if not isinstance(self.crops, List):
-            error_msg = "ARGUMENT must be of type 'TYPE'"
+            error_msg = "crops must be of type 'List'"
             raise PlanterError(error_msg)
 
     def _check_id(self):
         if not isinstance(self.id, int):
-            error_msg = "ARGUMENT must be of type 'TYPE'"
+            error_msg = "id must be of type 'int'"
             raise PlanterError(error_msg)
