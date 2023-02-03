@@ -13,8 +13,7 @@ class CropRecommenderTests(TestCase):
         self.zip = ZipCode.new("22407")
         self.place = Place.new(zip_code=self.zip)
 
-        self.crop = Crop(
-            id=73,
+        self.crop = Crop.new(
             name="Boberries",
             abs_range=TempRange.new(40, 80),
             opt_range=TempRange.new(65, 75),
@@ -37,8 +36,7 @@ class CropRecommenderTests(TestCase):
         self.assertTrue(r.recommended)
         self.assertTrue(r.margin.temp > 0)
 
-        crop = Crop(
-            id=73,
+        crop = Crop.new(
             name="Boberries",
             abs_range=TempRange.new(45, 80),
             opt_range=TempRange.new(65, 75),

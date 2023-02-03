@@ -42,14 +42,15 @@ class TestingCropRepo(CropRepo):
             "opt_range": self.opt_range,
             "abs_range": self.abs_range,
         }
-        self.crop = Crop.from_dict(self.crop_initdict)
+        self.crop = Crop.new_from_dict(self.crop_initdict)
         super().__init__()
 
     def create(self, crop_initdict):
-        return Crop.from_dict(crop_initdict)
+        return Crop.new_from_dict(crop_initdict)
 
     def get(self, crop_id):
-        return Crop.from_dict(self.crop_initdict)
+        self.crop_initdict["id"] = crop_id
+        return Crop.get_from_dict(self.crop_initdict)
 
     def save(self, crop: Crop):
         return
@@ -59,8 +60,7 @@ class TestingCropRepo(CropRepo):
 
 
 class DjangoCropRepo(CropRepo):
-    def create(self, initdict) -> int:
-        crop = Crop.from_dict(initdict)
+    def create(self, crop: Crop) -> None:
         absolute = crop.abs_range
         optimal = crop.opt_range
         crop_model = CropModel(
@@ -72,29 +72,32 @@ class DjangoCropRepo(CropRepo):
             opt_high=optimal.max.temp,
         )
         crop_model.save()
-        return crop_model.id
+        return
 
-    def get(self, crop_id) -> Crop:
-        crop_query = CropModel.objects.filter(id=crop_id)
+    def get(self, id) -> Crop:
+        crop_query = CropModel.objects.filter(id=id)
         if not (len(crop_query) > 0):
             raise CropRepoError()
-        crop_model = crop_query[0]
-        crop_id = crop_model.id
-        crop_name = crop_model.name
-        opt_range = TempRange.new(crop_model.opt_low, crop_model.opt_high)
-        abs_range = TempRange.new(crop_model.abs_low, crop_model.abs_high)
+        model_crop = crop_query[0]
+        id = model_crop.id
+        name = model_crop.name
+        opt_range = TempRange.new(model_crop.opt_low, model_crop.opt_high)
+        abs_range = TempRange.new(model_crop.abs_low, model_crop.abs_high)
         crop_initdict = {
-            "name": crop_name,
+            "id": id,
+            "name": name,
             "opt_range": opt_range,
             "abs_range": abs_range,
         }
-        return Crop.from_dict(crop_initdict)
+        return Crop.get_from_dict(crop_initdict)
 
     def save(self, crop: Crop) -> None:
         crop_query = CropModel.objects.filter(id=crop.id)
         if not len(crop_query) > 0:
-            raise CropRepoError()
+            self.create(crop)
+            return
         model_crop = crop_query[0]
+        model_crop.id = crop.id
         model_crop.name = crop.name
         model_crop.abs_low = crop.abs_range.min.temp
         model_crop.abs_high = crop.abs_range.max.temp
@@ -103,8 +106,8 @@ class DjangoCropRepo(CropRepo):
         model_crop.save()
         return
 
-    def delete(self, crop_id) -> None:
-        crop_query = CropModel.objects.filter(id=crop_id)
+    def delete(self, id) -> None:
+        crop_query = CropModel.objects.filter(id=id)
         if not len(crop_query) > 0:
             raise CropRepoError()
         crop_query[0].delete()

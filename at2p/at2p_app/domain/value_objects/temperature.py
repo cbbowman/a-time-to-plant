@@ -50,10 +50,10 @@ class Temperature(ValueObject):
         return self.__str__()
 
     def __sub__(self, other):
-        return self.temp - other.temp
+        return Temperature.new(self.temp - other.temp)
 
     def __add__(self, other):
-        return self.temp + other.temp
+        return Temperature.new(self.temp + other.temp)
 
 
 @dataclass(frozen=True, eq=True)

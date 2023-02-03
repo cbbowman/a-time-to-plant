@@ -12,7 +12,7 @@ class TestCropInterface(TestCase):
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
         }
-        self.crop = Crop.from_dict(self.initdict)
+        self.crop = Crop.new_from_dict(self.initdict)
         self.crop_id = self.crop.id
 
         self.repo = TestingCropRepo()

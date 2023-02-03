@@ -22,7 +22,7 @@ class CropRecommender:
         absolute_margin = min(abs_max - high, low - abs_min)
         optimal_margin = min(opt_max - avg, avg - opt_min)
         margin = min(absolute_margin, optimal_margin)
-        recommended = margin > 0
+        recommended = margin.temp > 0
         return Recommendation.new(
-            self._weather.location, crop, recommended, Temperature.new(margin)
+            self._weather.location, crop, recommended, margin
         )

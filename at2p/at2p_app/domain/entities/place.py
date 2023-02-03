@@ -25,7 +25,9 @@ class Place:
     @classmethod
     def new(cls, zip_code: ZipCode, country: Country = Country.new("US")):
         zip_code, country = cls._validate(zip_code, country)
-        return cls(uuid4().int, zip_code, country)
+        id = uuid4().int % 10**9
+        cls._clean()
+        return cls(id, zip_code, country)
 
     @classmethod
     def _validate(cls, zip_code: ZipCode, country: Country):

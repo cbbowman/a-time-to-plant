@@ -3,8 +3,16 @@ from at2p_app.domain.value_objects.temperature import (
     TempRange,
     Temperature,
     TempScale,
-    TemperatureError
+    TemperatureError,
 )
+
+
+class TempScaleTests(TestCase):
+    def test_str_repr(self):
+        s = TempScale.F
+        f_str = f"\u00b0{s.name}"
+        self.assertEqual(f_str, s.__str__())
+        self.assertEqual(f_str, s.__repr__())
 
 
 class TemperatureObjectTests(TestCase):
@@ -17,7 +25,6 @@ class TemperatureObjectTests(TestCase):
         self.assertIsInstance(self.t, Temperature)
         self.assertIsInstance(self.t.scale, TempScale)
         self.assertEqual(self.t.temp, self.n)
-        self.assertEqual(self.t.scale, TempScale.F)
 
     def test_comparison(self):
         low = 40
@@ -33,6 +40,12 @@ class TemperatureObjectTests(TestCase):
         temp1 = Temperature.new(low, TempScale.F)
         temp2 = Temperature.new(low, TempScale.C)
         self.assertNotEqual(temp1, temp2)
+
+    def test_addition(self):
+        t1 = Temperature.new(10)
+        t2 = Temperature.new(20)
+        t3 = Temperature.new(30)
+        self.assertEqual(t1 + t2, t3)
 
     def test_str(self):
         t_str = f"{self.t.temp} {self.t.scale}"
@@ -56,7 +69,23 @@ class TempRangeTests(TestCase):
         self.assertIsInstance(self.r.max, Temperature)
         self.assertIsInstance(self.r.scale, TempScale)
 
-    def test_str(self):
+    def test_validation(self):
+        bad_value = "Bad Value"
+        self.assertRaises(TemperatureError, TempRange.new, bad_value, 100)
+        self.assertRaises(TemperatureError, TempRange.new, 100, bad_value)
+        self.assertRaises(TemperatureError, TempRange.new, 50, 100, bad_value)
+
+    def test_str_repr(self):
         t_str = f"{self.r.min.temp} \u2013 {self.r.max.temp} {self.r.scale}"
         self.assertEqual(self.r.__str__(), t_str)
         self.assertEqual(self.r.__repr__(), t_str)
+
+    def test_includes_temp(self):
+        t = Temperature.new(50)
+        self.assertTrue(self.r.includes_temp(t))
+        self.assertRaises(TemperatureError, self.r.includes_temp, "temp")
+
+    def test_includes_range(self):
+        r = TempRange.new(50, 60)
+        self.assertTrue(self.r.includes_range(r))
+        self.assertRaises(TemperatureError, self.r.includes_range, "temp")

@@ -15,7 +15,7 @@ COUNTRIES_FIRST = ["US"]
 
 
 class CropModel(models.Model):
-    id = models.PositiveSmallIntegerField("Crop ID", primary_key=True)
+    id = models.PositiveIntegerField("Crop ID", primary_key=True)
     name = models.CharField("Name", max_length=64)
     abs_low = models.SmallIntegerField("Absolute Low Temperature")
     abs_high = models.SmallIntegerField("Absolute High Temperature")

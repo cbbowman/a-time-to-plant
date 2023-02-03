@@ -11,7 +11,7 @@ class CropError(Exception):
         super().__init__(message)
 
 
-@dataclass
+@dataclass(eq=True)
 class Crop:
     id: int
     name: str
@@ -21,7 +21,11 @@ class Crop:
     @classmethod
     def new(cls, name: str, abs_range: TempRange, opt_range: TempRange):
         name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
-        id = uuid4().int % 1000000
+        id = uuid4().int % 10**9
+        return cls(id, name, abs_range, opt_range)
+
+    @classmethod
+    def get(cls, id: int, name: str, abs_range: TempRange, opt_range: TempRange):
         return cls(id, name, abs_range, opt_range)
 
     @classmethod
@@ -54,8 +58,12 @@ class Crop:
             raise CropError(error_msg)
 
     @classmethod
-    def from_dict(cls, d):
+    def new_from_dict(cls, d):
         return cls.new(**d)
+
+    @classmethod
+    def get_from_dict(cls, d):
+        return cls.get(**d)
 
     def __str__(self) -> str:
         return f"{self.name}"

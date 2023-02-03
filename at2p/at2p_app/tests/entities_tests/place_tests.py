@@ -13,6 +13,7 @@ class PlaceTest(TestCase):
         p_str = f"{self.place.zip_code}, {self.place.country.code}"
         self.assertIsInstance(self.place, Place)
         self.assertEqual(self.place.__str__(), p_str)
+        self.assertEqual(self.place.__repr__(), p_str)
         return
 
     def test_validation(self) -> None:

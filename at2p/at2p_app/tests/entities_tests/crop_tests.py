@@ -19,7 +19,7 @@ class TestCrop(TestCase):
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
         }
-        c = Crop.from_dict(initdict)
+        c = Crop.new_from_dict(initdict)
         self.assertTrue(isinstance(c, Crop))
 
     def test_crop_creation(self):
@@ -36,11 +36,11 @@ class TestCrop(TestCase):
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
         }
-        self.assertRaises(CropError, Crop.from_dict, initdict)
+        self.assertRaises(CropError, Crop.new_from_dict, initdict)
 
         initdict = {
             "name": 12,
             "abs_range": TempRange.new(40, 80),
             "opt_range": TempRange.new(65, 75),
         }
-        self.assertRaises(CropError, Crop.from_dict, initdict)
+        self.assertRaises(CropError, Crop.new_from_dict, initdict)
