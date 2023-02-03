@@ -9,8 +9,6 @@ class Place:
     id: int
     zip_code: ZipCode
     country: Country = Country.new("US")
-    # crops: list = field(default_factory=list)
-    # weather: Weather = None
 
     @classmethod
     def new(cls, zip_code: ZipCode, country: Country = Country.new("US")):

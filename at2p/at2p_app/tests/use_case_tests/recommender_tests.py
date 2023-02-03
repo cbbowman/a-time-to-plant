@@ -3,7 +3,7 @@ from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
 from at2p_app.domain.use_cases.recommending import CropRecommender
 from at2p_app.domain.value_objects.temperature import TempRange, Temperature
-from at2p_app.domain.value_objects.weather import Weather
+from at2p_app.domain.entities.weather import Weather
 from at2p_app.domain.value_objects.recommendation import Recommendation
 from at2p_app.domain.value_objects.location import ZipCode
 
@@ -18,7 +18,7 @@ class CropRecommenderTests(TestCase):
             abs_range=TempRange.new(40, 80),
             opt_range=TempRange.new(65, 75),
         )
-        self.weather = Weather(
+        self.weather = Weather.new(
             location=self.place,
             high=Temperature.new(79),
             low=Temperature.new(41),
