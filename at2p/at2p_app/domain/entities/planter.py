@@ -1,15 +1,7 @@
 from dataclasses import dataclass
+from at2p_app.domain.common.error import PlanterError
 from at2p_app.domain.entities.place import Place
 from uuid import uuid4
-
-
-@dataclass
-class PlanterError(Exception):
-    error_msg = "Generic Person Requirements Error"
-
-    def __init__(self, message: str = error_msg) -> None:
-        self.message = message
-        super().__init__(self.message)
 
 
 @dataclass

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from at2p_app.domain.common.error import CropRepoError
 from at2p_app.domain.value_objects.temperature import TempRange
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.models import CropModel
@@ -21,13 +22,6 @@ class CropRepo(ABC):
     def delete(self, crop_id):
         pass
 
-
-class CropRepoError(Exception):
-    generic_msg = "Generic Repository Error"
-
-    def __init__(self, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\n"
-        super().__init__(message)
 
 
 class TestingCropRepo(CropRepo):

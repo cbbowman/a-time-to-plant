@@ -2,11 +2,9 @@ from django.test import TestCase
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
 from at2p_app.domain.value_objects.location import ZipCode
-from at2p_app.domain.value_objects.recommendation import (
-    Recommendation,
-    RecommendationError,
-)
+from at2p_app.domain.value_objects.recommendation import Recommendation
 from at2p_app.domain.value_objects.temperature import TempRange, Temperature
+from at2p_app.domain.common.error import RecommendationError
 
 
 class RecommendationTests(TestCase):

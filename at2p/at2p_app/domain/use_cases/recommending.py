@@ -1,5 +1,4 @@
 from at2p_app.domain.value_objects.recommendation import Recommendation
-from at2p_app.domain.value_objects.temperature import Temperature
 from at2p_app.domain.value_objects.weather import Weather
 from at2p_app.domain.entities.crop import Crop
 

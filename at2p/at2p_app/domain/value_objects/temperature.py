@@ -1,13 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from at2p_app.domain.common.base import ValueObject
-
-
-class TemperatureError(Exception):
-    error_msg = "Generic Temperature Error"
-
-    def __init__(self, error_msg: str = error_msg) -> None:
-        super().__init__(error_msg)
+from at2p_app.domain.common.error import TemperatureError
 
 
 class TempScale(Enum):

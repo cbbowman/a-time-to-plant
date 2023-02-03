@@ -20,4 +20,6 @@ class PlaceTest(TestCase):
         bad_value = 12
         self.assertRaises(PlaceError, Place.new, zip_code=bad_value)
         bad_value = "GR"
-        self.assertRaises(PlaceError, Place.new, zip_code=self.zip, country=bad_value)
+        self.assertRaises(
+            PlaceError, Place.new, zip_code=self.zip, country=bad_value
+        )

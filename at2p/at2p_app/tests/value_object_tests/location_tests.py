@@ -1,8 +1,6 @@
 from django.test import TestCase
-from at2p_app.domain.value_objects.location import (
-    Country,
-    CountryError,
-)
+from at2p_app.domain.common.error import CountryError, ZipCodeError
+from at2p_app.domain.value_objects.location import ZipCode, Country
 
 
 class CountryTest(TestCase):
@@ -34,3 +32,20 @@ class CountryTest(TestCase):
         code = " U s  \n"
         c = Country.new(code)
         self.assertEqual(c.code, "US")
+
+
+class ZipCodeTest(TestCase):
+    def setUp(self) -> None:
+        self.zip = ZipCode.new("22405")
+        return super().setUp()
+
+    def test_create_zip(self) -> None:
+        self.assertTrue(isinstance(self.zip, ZipCode))
+
+    def test_str(self):
+        self.assertEqual(self.zip.__str__(), self.zip.zip)
+        self.assertEqual(self.zip.__repr__(), self.zip.zip)
+
+    def test_code_isnt_a_str(self) -> None:
+        code = 42
+        self.assertRaises(ZipCodeError, ZipCode.new, code)

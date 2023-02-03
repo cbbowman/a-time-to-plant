@@ -3,8 +3,8 @@ from at2p_app.domain.value_objects.temperature import (
     TempRange,
     Temperature,
     TempScale,
-    TemperatureError,
 )
+from at2p_app.domain.common.error import TemperatureError
 
 
 class TempScaleTests(TestCase):

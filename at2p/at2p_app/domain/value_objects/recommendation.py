@@ -1,16 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.common.base import ValueObject
-from at2p_app.domain.value_objects.temperature import Temperature
+from at2p_app.domain.common.error import RecommendationError
+from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
-
-
-class RecommendationError(Exception):
-    error_msg = "Generic Recommendation Error"
-
-    def __init__(self, error_msg: str = error_msg) -> None:
-        super().__init__(error_msg)
+from at2p_app.domain.value_objects.temperature import Temperature
 
 
 @dataclass(frozen=True)

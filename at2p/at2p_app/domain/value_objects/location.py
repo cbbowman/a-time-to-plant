@@ -1,24 +1,9 @@
 from dataclasses import dataclass
 from at2p_app.domain.common.base import ValueObject
+from at2p_app.domain.common.error import CountryError, ZipCodeError
 
 COUNTRIES = {"US": "United States"}
 COUNTRY_CODE_LENGTH = 2
-
-
-class CountryError(Exception):
-    generic_msg = "Generic Country Error"
-
-    def __init__(self, code: str, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\nCode: {code}"
-        super().__init__(message)
-
-
-class ZipCodeError(Exception):
-    generic_msg = "Generic Zip Code Error"
-
-    def __init__(self, code: str, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\nCode: {code}"
-        super().__init__(message)
 
 
 @dataclass(eq=True, slots=True, kw_only=True, frozen=True)
@@ -63,6 +48,7 @@ class ZipCode(ValueObject):
     @classmethod
     def new(cls, zip):
         cls._validate(zip)
+        cls._clean()
         return cls(zip)
 
     @classmethod

@@ -1,14 +1,7 @@
 from dataclasses import dataclass
-from at2p_app.domain.value_objects.temperature import TempRange
 from uuid import uuid4
-
-
-class CropError(Exception):
-    generic_msg = "Generic Crop Error"
-
-    def __init__(self, name: str, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\nName: {name}\n"
-        super().__init__(message)
+from at2p_app.domain.value_objects.temperature import TempRange
+from at2p_app.domain.common.error import CropError
 
 
 @dataclass(eq=True)
@@ -20,23 +13,31 @@ class Crop:
 
     @classmethod
     def new(cls, name: str, abs_range: TempRange, opt_range: TempRange):
+
         name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
         id = uuid4().int % 10**9
+        name = cls._clean(name)
         return cls(id, name, abs_range, opt_range)
 
     @classmethod
-    def get(cls, id: int, name: str, abs_range: TempRange, opt_range: TempRange):
+    def get(
+        cls, id: int, name: str, abs_range: TempRange, opt_range: TempRange
+    ):
+
         return cls(id, name, abs_range, opt_range)
 
     @classmethod
     def _validate(cls, name: str, abs_range: TempRange, opt_range: TempRange):
+
         cls._check_name(name)
         cls._check_ranges(abs_range, opt_range)
         return name, abs_range, opt_range
 
     @classmethod
-    def _clean(cls):
-        pass
+    def _clean(cls, name: str):
+        name = name.strip()
+        name = name.title()
+        return name
 
     @classmethod
     def _check_name(cls, name):
@@ -49,6 +50,7 @@ class Crop:
 
     @classmethod
     def _check_ranges(cls, abs_range, opt_range):
+
         if not isinstance(abs_range, TempRange):
             error_msg = "Absolute Range must be an instance of 'TempRange'."
             raise CropError(error_msg)

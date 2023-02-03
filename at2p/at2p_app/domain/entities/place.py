@@ -1,17 +1,7 @@
 from dataclasses import dataclass
-# from dataclasses import dataclass, field
-# from at2p_app.domain.entities.crop import Crop
-# from at2p_app.domain.value_objects.weather import Weather
 from at2p_app.domain.value_objects.location import ZipCode, Country
+from at2p_app.domain.common.error import PlaceError
 from uuid import uuid4
-
-
-class PlaceError(Exception):
-    generic_msg = "Generic Place Error"
-
-    def __init__(self, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\n"
-        super().__init__(message)
 
 
 @dataclass(eq=True)
