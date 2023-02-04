@@ -17,9 +17,11 @@ class Place:
         zip_code: ZipCode,
         country: Country = Country.new("US"),
         weather_id: Weather = None,
+        id: UUID = None,
     ):
         cls._validate()
-        id = uuid4()
+        if id is None:
+            id = uuid4()
         zip_code, country = cls._clean(zip_code, country)
         return cls(id, zip_code, country, weather_id)
 

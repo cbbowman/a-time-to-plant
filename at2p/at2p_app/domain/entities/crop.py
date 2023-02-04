@@ -40,43 +40,40 @@ class CropName:
 
 @dataclass(eq=True)
 class Crop:
-    id: UUID
     name: CropName
     abs_range: TempRange
     opt_range: TempRange
+    id: UUID
 
     @classmethod
-    def new(cls, name: str, abs_range: TempRange, opt_range: TempRange):
-
-        name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
-        id = uuid4()
-        name = cls._clean(name)
-        return cls(id, name, abs_range, opt_range)
-
-    @classmethod
-    def get(
+    def new(
         cls,
-        id: UUID,
-        name: CropName,
+        name: str,
         abs_range: TempRange,
         opt_range: TempRange,
+        id: UUID = None,
     ):
 
-        name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
-        name = cls._clean(name)
-        return cls(id, name, abs_range, opt_range)
+        cls._validate(abs_range, opt_range)
+        name, id = cls._clean(name, id)
+        return cls(name, abs_range, opt_range, id)
 
     @classmethod
-    def _validate(cls, name: str, abs_range: TempRange, opt_range: TempRange):
+    def _validate(cls, abs_range: TempRange, opt_range: TempRange):
 
         cls._check_ranges(abs_range, opt_range)
-        return name, abs_range, opt_range
+        return
 
     @classmethod
-    def _clean(cls, name: CropName):
+    def _clean(cls, name: CropName, id: UUID):
+
         if not isinstance(name, CropName):
-            return CropName.new(name)
-        return name
+            name = CropName.new(name)
+
+        if not isinstance(id, UUID):
+            id = uuid4()
+
+        return name, id
 
     @classmethod
     def _check_ranges(cls, abs_range, opt_range):
@@ -92,10 +89,6 @@ class Crop:
     @classmethod
     def new_from_dict(cls, d):
         return cls.new(**d)
-
-    @classmethod
-    def get_from_dict(cls, d):
-        return cls.get(**d)
 
     def __str__(self) -> str:
         return f"{self.name}"

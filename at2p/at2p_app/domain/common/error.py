@@ -30,6 +30,14 @@ class InterfaceError(Exception):
         super().__init__(message)
 
 
+class PlaceRepoError(Exception):
+    generic_msg = "Generic Repository Error"
+
+    def __init__(self, error_msg: str = generic_msg) -> None:
+        message = f"\n{error_msg}\n"
+        super().__init__(message)
+
+
 class PlanterError(Exception):
     error_msg = "Generic Person Requirements Error"
 

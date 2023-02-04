@@ -25,6 +25,22 @@ class CropModel(models.Model):
     def __str__(self) -> str:
         return f"\n\n{self.name}\n{self.id}\n\n"
 
+    def __repr__(self) -> str:
+        return f"\n\n{self.name}\n{self.id}\n\n"
+
+
+class PlaceModel(models.Model):
+    id = models.UUIDField("Place ID", primary_key=True)
+    zip_code = models.CharField("ZIP Code", max_length=32)
+    country = models.CharField("Country", max_length=2)
+    weather_id = models.UUIDField("Weather ID", null=True)
+
+    def __str__(self) -> str:
+        return f"\n\n{self.zip_code}, {self.country}\n\n"
+
+    def __repr__(self) -> str:
+        return f"\n\n{self.zip_code}, {self.country}\n\n"
+
 
 class Crop(models.Model):
     name = models.CharField("Name", max_length=50)

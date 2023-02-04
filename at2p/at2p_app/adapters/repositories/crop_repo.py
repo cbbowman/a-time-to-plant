@@ -6,19 +6,19 @@ from at2p_app.models import CropModel
 
 class CropRepo(ABC):
     @abstractmethod
-    def create(self, crop_id):
+    def create(self):
         pass
 
     @abstractmethod
-    def get(self, crop_id):
+    def get(self):
         pass
 
     @abstractmethod
-    def save(self, crop: Crop):
+    def save(self):
         pass
 
     @abstractmethod
-    def delete(self, crop_id):
+    def delete(self):
         pass
 
 
@@ -42,7 +42,7 @@ class TestingCropRepo(CropRepo):
 
     def get(self, crop_id) -> Crop:
         self.crop_initdict["id"] = crop_id
-        return Crop.get_from_dict(self.crop_initdict)
+        return Crop.new_from_dict(self.crop_initdict)
 
     def save(self, crop: Crop):
         return
@@ -99,7 +99,7 @@ class DjangoCropRepo(CropRepo):
             "opt_range": opt_range,
             "abs_range": abs_range,
         }
-        return Crop.get_from_dict(crop_initdict)
+        return Crop.new_from_dict(crop_initdict)
 
     def _model_from_crop(self, crop: Crop) -> CropModel:
         model_crop = CropModel()
