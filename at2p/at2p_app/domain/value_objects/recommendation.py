@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 from datetime import datetime
+from uuid import UUID
 from at2p_app.domain.common.base import ValueObject
 from at2p_app.domain.common.error import RecommendationError
 from at2p_app.domain.entities.crop import Crop
-from at2p_app.domain.entities.place import Place
 from at2p_app.domain.value_objects.temperature import Temperature
 
 
 @dataclass(frozen=True)
 class Recommendation(ValueObject):
-    place: Place
+    place_id: UUID
     crop: Crop
     recommended: bool
     margin: Temperature
@@ -17,18 +17,28 @@ class Recommendation(ValueObject):
 
     @classmethod
     def new(
-        cls, place: Place, crop: Crop, recommended: bool, margin: Temperature
+        cls,
+        place_id: UUID,
+        crop: Crop,
+        recommended: bool,
+        margin: Temperature,
     ):
-        place, crop, recommended, margin = cls._validate(
-            place, crop, recommended, margin
+        place_id, crop, recommended, margin = cls._validate(
+            place_id, crop, recommended, margin
         )
         cls._clean()
-        return cls(place, crop, recommended, margin, datetime.now())
+        return cls(place_id, crop, recommended, margin, datetime.now())
 
     @classmethod
-    def _validate(cls, place: Place, crop: Crop, recommended: bool, margin: Temperature):
-        if not isinstance(place, Place):
-            error_msg = "Place must be a Place!"
+    def _validate(
+        cls,
+        place_id: UUID,
+        crop: Crop,
+        recommended: bool,
+        margin: Temperature,
+    ):
+        if not isinstance(place_id, UUID):
+            error_msg = "Place_id must be a UUID!"
             raise RecommendationError(error_msg=error_msg)
         if not isinstance(crop, Crop):
             error_msg = "Crop must be a Crop!"
@@ -39,17 +49,14 @@ class Recommendation(ValueObject):
         if not isinstance(margin, Temperature):
             error_msg = "Margin must be a temperature!"
             raise RecommendationError(error_msg=error_msg)
-        return place, crop, recommended, margin
+        return place_id, crop, recommended, margin
 
     @classmethod
     def _clean(cls):
         return
 
     def __str__(self) -> str:
-        rec_str = (
-            f"{self.crop}; {self.recommended}; "
-            f"{self.margin}; {self.time_stamp}"
-        )
+        rec_str = f"{self.place_id.int}; {self.crop}; {self.time_stamp}"
         return rec_str
 
     def __repr__(self) -> str:

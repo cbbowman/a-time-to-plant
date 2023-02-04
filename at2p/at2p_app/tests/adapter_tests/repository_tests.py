@@ -1,10 +1,10 @@
-from at2p_app.adapters.repositories import (
+from at2p_app.adapters.repositories.crop_repo import (
     DjangoCropRepo,
     CropRepo,
     CropRepoError,
 )
 from django.test import TestCase
-from at2p_app.domain.entities.crop import Crop
+from at2p_app.domain.entities.crop import Crop, CropName
 from at2p_app.domain.value_objects.temperature import TempRange
 
 
@@ -26,17 +26,28 @@ class TestDjangoRepo(TestCase):
     def test_instantiation(self):
         self.assertIsInstance(self.repo, CropRepo)
 
-    def test_save_crop(self):
-        self.assertIsNone(self.repo.save(self.crop))
-        self.assertIsNone(self.repo.save(self.crop))
+    def test_create_crop(self):
+        # created_crop = self.repo.create(self.crop_initdict)
+        self.assertIsInstance(self.repo.create(self.crop_initdict), Crop)
+        # self.assertRaises(CropRepoError, self.repo.create, self.crop_initdict)
 
     def test_get_crop(self):
-        self.repo.save(self.crop)
-        retrieved_crop = self.repo.get(id=self.crop_id)
-        self.assertEqual(retrieved_crop, self.crop)
+        created_crop = self.repo.create(self.crop_initdict)
+        retrieved_crop = self.repo.get(created_crop.id)
+        self.assertIsInstance(created_crop.name, CropName)
+        self.assertEqual(retrieved_crop.name, created_crop.name)
+
+    def test_save_crop(self):
+        created_crop = self.repo.create(self.crop_initdict)
+        new_name = CropName.new("Huckleberries")
+        created_crop.name = new_name
+        self.repo.save(created_crop)
+        retrieved_crop = self.repo.get(created_crop.id)
+        self.assertEqual(retrieved_crop.name, new_name)
 
     def test_delete_crop(self):
-        self.repo.save(self.crop)
-        self.repo.delete(id=self.crop_id)
-        self.assertRaises(CropRepoError, self.repo.get, self.crop_id)
-        self.assertRaises(CropRepoError, self.repo.delete, self.crop_id)
+        created_crop = self.repo.create(self.crop_initdict)
+        self.repo.delete(created_crop)
+        self.assertRaises(CropRepoError, self.repo.get, created_crop.id)
+        self.assertRaises(CropRepoError, self.repo.save, created_crop)
+        self.assertRaises(CropRepoError, self.repo.delete, created_crop)

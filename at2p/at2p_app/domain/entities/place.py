@@ -1,44 +1,48 @@
 from dataclasses import dataclass
+from uuid import uuid4, UUID
 from at2p_app.domain.value_objects.location import ZipCode, Country
-from at2p_app.domain.common.error import PlaceError
-from uuid import uuid4
+from at2p_app.domain.value_objects.weather import Weather
 
 
 @dataclass(eq=True)
 class Place:
-    id: int
+    id: UUID
     zip_code: ZipCode
-    country: Country = Country.new("US")
+    country: Country
+    weather_id: int
 
     @classmethod
-    def new(cls, zip_code: ZipCode, country: Country = Country.new("US")):
-        zip_code, country = cls._validate(zip_code, country)
-        id = uuid4().int % 10**9
-        cls._clean()
-        return cls(id, zip_code, country)
+    def new(
+        cls,
+        zip_code: ZipCode,
+        country: Country = Country.new("US"),
+        weather_id: Weather = None,
+    ):
+        cls._validate()
+        id = uuid4()
+        zip_code, country = cls._clean(zip_code, country)
+        return cls(id, zip_code, country, weather_id)
 
     @classmethod
-    def _validate(cls, zip_code: ZipCode, country: Country):
+    def _validate(cls):
+        pass
+
+    @classmethod
+    def _clean(cls, zip_code: ZipCode, country: Country):
         zip_code = cls._check_zip(zip_code)
         country = cls._check_country(country)
         return zip_code, country
 
     @classmethod
-    def _clean(cls):
-        pass
-
-    @classmethod
     def _check_zip(cls, zip_code):
         if not isinstance(zip_code, ZipCode):
-            error_msg = "Zip code must be an instance of ZipCode"
-            raise PlaceError(error_msg)
+            return ZipCode.new(zip_code)
         return zip_code
 
     @classmethod
     def _check_country(cls, country):
         if not isinstance(country, Country):
-            error_msg = "Country argument must be an instance of 'Country'."
-            raise PlaceError(error_msg)
+            return Country.new(country)
         return country
 
     def __str__(self) -> str:

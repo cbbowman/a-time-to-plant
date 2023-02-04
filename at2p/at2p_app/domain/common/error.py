@@ -1,21 +1,5 @@
-
-class TemperatureError(Exception):
-    error_msg = "Generic Temperature Error"
-
-    def __init__(self, error_msg: str = error_msg) -> None:
-        super().__init__(error_msg)
-
-
 class CountryError(Exception):
     generic_msg = "Generic Country Error"
-
-    def __init__(self, code: str, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\nCode: {code}"
-        super().__init__(message)
-
-
-class ZipCodeError(Exception):
-    generic_msg = "Generic Zip Code Error"
 
     def __init__(self, code: str, error_msg: str = generic_msg) -> None:
         message = f"\n{error_msg}\nCode: {code}"
@@ -30,23 +14,16 @@ class CropError(Exception):
         super().__init__(message)
 
 
-class RecommendationError(Exception):
-    error_msg = "Generic Recommendation Error"
+class CropRepoError(Exception):
+    generic_msg = "Generic Repository Error"
 
-    def __init__(self, error_msg: str = error_msg) -> None:
-        super().__init__(error_msg)
-
-
-class WeatherError(Exception):
-    generic_msg = "Generic Weather Error"
-
-    def __init__(self, location, error_msg: str = generic_msg) -> None:
-        message = f"\n{error_msg}\nLocation: {location}"
+    def __init__(self, error_msg: str = generic_msg) -> None:
+        message = f"\n{error_msg}\n"
         super().__init__(message)
 
 
-class PlaceError(Exception):
-    generic_msg = "Generic Place Error"
+class InterfaceError(Exception):
+    generic_msg = "Generic Interface Error"
 
     def __init__(self, error_msg: str = generic_msg) -> None:
         message = f"\n{error_msg}\n"
@@ -61,9 +38,39 @@ class PlanterError(Exception):
         super().__init__(self.message)
 
 
-class CropRepoError(Exception):
-    generic_msg = "Generic Repository Error"
+class RecommendationError(Exception):
+    error_msg = "Generic Recommendation Error"
+
+    def __init__(self, error_msg: str = error_msg) -> None:
+        super().__init__(error_msg)
+
+
+class RecommenderError(Exception):
+    generic_msg = "Generic Recommender Error"
 
     def __init__(self, error_msg: str = generic_msg) -> None:
         message = f"\n{error_msg}\n"
+        super().__init__(message)
+
+
+class TemperatureError(Exception):
+    error_msg = "Generic Temperature Error"
+
+    def __init__(self, error_msg: str = error_msg) -> None:
+        super().__init__(error_msg)
+
+
+class WeatherError(Exception):
+    generic_msg = "Generic Weather Error"
+
+    def __init__(self, location, error_msg: str = generic_msg) -> None:
+        message = f"\n{error_msg}\nLocation: {location}"
+        super().__init__(message)
+
+
+class ZipCodeError(Exception):
+    generic_msg = "Generic Zip Code Error"
+
+    def __init__(self, code: str, error_msg: str = generic_msg) -> None:
+        message = f"\n{error_msg}\nCode: {code}"
         super().__init__(message)

@@ -1,37 +1,29 @@
 from dataclasses import dataclass
-from uuid import uuid4
+from uuid import uuid4, UUID
 from at2p_app.domain.value_objects.temperature import TempRange
 from at2p_app.domain.common.error import CropError
 
 
 @dataclass(eq=True)
-class Crop:
-    id: int
+class CropName:
+
     name: str
-    abs_range: TempRange
-    opt_range: TempRange
 
     @classmethod
-    def new(cls, name: str, abs_range: TempRange, opt_range: TempRange):
-
-        name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
-        id = uuid4().int % 10**9
+    def new(cls, name: str):
+        cls._validate(name)
         name = cls._clean(name)
-        return cls(id, name, abs_range, opt_range)
+        return cls(name)
 
     @classmethod
-    def get(
-        cls, id: int, name: str, abs_range: TempRange, opt_range: TempRange
-    ):
+    def _validate(cls, name):
+        if not isinstance(name, str):
+            raise ValueError("name must be a string")
 
-        return cls(id, name, abs_range, opt_range)
-
-    @classmethod
-    def _validate(cls, name: str, abs_range: TempRange, opt_range: TempRange):
-
-        cls._check_name(name)
-        cls._check_ranges(abs_range, opt_range)
-        return name, abs_range, opt_range
+        if not len(name.strip()) > 0:
+            error_msg = "Name may not be an empty string"
+            raise ValueError(error_msg)
+        return name
 
     @classmethod
     def _clean(cls, name: str):
@@ -39,14 +31,52 @@ class Crop:
         name = name.title()
         return name
 
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+@dataclass(eq=True)
+class Crop:
+    id: UUID
+    name: CropName
+    abs_range: TempRange
+    opt_range: TempRange
+
     @classmethod
-    def _check_name(cls, name):
-        if not isinstance(name, str):
-            error_msg = "Crop name must be a string"
-            raise CropError(error_msg)
-        if not len(name) > 0:
-            error_msg = "Crop may not be an empty string"
-            raise CropError(error_msg)
+    def new(cls, name: str, abs_range: TempRange, opt_range: TempRange):
+
+        name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
+        id = uuid4()
+        name = cls._clean(name)
+        return cls(id, name, abs_range, opt_range)
+
+    @classmethod
+    def get(
+        cls,
+        id: UUID,
+        name: CropName,
+        abs_range: TempRange,
+        opt_range: TempRange,
+    ):
+
+        name, abs_range, opt_range = cls._validate(name, abs_range, opt_range)
+        name = cls._clean(name)
+        return cls(id, name, abs_range, opt_range)
+
+    @classmethod
+    def _validate(cls, name: str, abs_range: TempRange, opt_range: TempRange):
+
+        cls._check_ranges(abs_range, opt_range)
+        return name, abs_range, opt_range
+
+    @classmethod
+    def _clean(cls, name: CropName):
+        if not isinstance(name, CropName):
+            return CropName.new(name)
+        return name
 
     @classmethod
     def _check_ranges(cls, abs_range, opt_range):

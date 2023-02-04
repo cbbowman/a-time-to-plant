@@ -1,23 +1,36 @@
 import csv
-from at2p_app.domain.value_objects.temperature import TempRange
-from at2p_app.adapters.repositories import CropRepo
+from uuid import UUID
+from dataclasses import dataclass
+from at2p_app.adapters.repositories.crop_repo import CropRepo, Crop, TempRange
+from at2p_app.domain.common.error import InterfaceError
 
 CROP_LIST_CSV = "at2p/at2p_app/static/crops_and_temps.csv"
 
 
+@dataclass
 class CropInterface:
-    def __init__(self, crop_repo: CropRepo) -> None:
-        self._crop_repo = crop_repo
+    _crop_repo: CropRepo
 
-    def create_crop(self, init_dict):
-        crop_id = self._crop_repo.create(init_dict)
-        return crop_id
+    @classmethod
+    def new(cls, crop_repo: CropRepo):
+        cls._validate(crop_repo)
+        return cls(crop_repo)
 
-    def get_crop(self, crop_id):
+    @classmethod
+    def _validate(cls, crop_repo: CropRepo):
+        if not isinstance(crop_repo, CropRepo):
+            error_msg = "Interface must be given a valid CropRepo object"
+            raise InterfaceError(error_msg)
+
+    def create_crop(self, crop_dict) -> Crop:
+        crop = self._crop_repo.create(crop_dict)
+        return crop
+
+    def get_crop(self, crop_id: UUID) -> Crop:
         crop = self._crop_repo.get(crop_id)
         return crop
 
-    def save_crop(self, crop):
+    def save_crop(self, crop: Crop):
         self._crop_repo.save(crop)
         return
 
@@ -25,7 +38,7 @@ class CropInterface:
         self._crop_repo.delete(crop)
         return
 
-    def import_crops(self, source: str = CROP_LIST_CSV):
+    def import_crops(self, source: str = CROP_LIST_CSV) -> list:
         imported_crops = []
         with open(source, encoding="UTF-8") as f:
             reader = csv.reader(f)
@@ -40,7 +53,7 @@ class CropInterface:
                 init_dict = {
                     "name": row[0],
                     "abs_range": abs_range,
-                    "opt_range": opt_range
+                    "opt_range": opt_range,
                 }
                 new_crop = self._crop_repo.create(init_dict)
                 imported_crops.append(new_crop)

@@ -47,6 +47,12 @@ class TemperatureObjectTests(TestCase):
         t3 = Temperature.new(30)
         self.assertEqual(t1 + t2, t3)
 
+    def test_subtraction(self):
+        t1 = Temperature.new(10)
+        t2 = Temperature.new(20)
+        t3 = Temperature.new(30)
+        self.assertEqual(t3 - t2, t1)
+
     def test_str(self):
         t_str = f"{self.t.temp} {self.t.scale}"
         self.assertEqual(self.t.__str__(), t_str)

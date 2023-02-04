@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from at2p_app.domain.common.error import PlanterError
-from at2p_app.domain.entities.place import Place
 from uuid import uuid4
+from at2p_app.domain.common.error import PlanterError
+from at2p_app.domain.entities.crop import Crop
+from at2p_app.domain.entities.place import Place
 
 
 @dataclass
@@ -34,6 +35,12 @@ class Planter:
             error_msg = "location must be of type 'Place'"
             raise PlanterError(error_msg)
 
+    def __str__(self) -> str:
+        return f"{self.username} ({self.id})"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def change_username(self, username):
         self.__class__._check_username(username)
         self.username = username
@@ -43,3 +50,23 @@ class Planter:
         self.__class__._check_location(location)
         self.location = location
         return
+
+    def add_crop(self, crop: Crop):
+        if not self._crop_in_list(crop):
+            self.crops.append(crop)
+        else:
+            error_msg = "Crop ({crop}) already in list"
+            raise PlanterError(error_msg)
+
+    def remove_crop(self, crop: Crop):
+        if self._crop_in_list(crop):
+            self.crops.remove(crop)
+        else:
+            error_msg = "Crop ({crop}) not in list"
+            raise PlanterError(error_msg)
+
+    def _crop_in_list(self, crop) -> bool:
+        for c in self.crops:
+            if c == crop:
+                return True
+        return False

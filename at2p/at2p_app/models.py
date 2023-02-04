@@ -15,12 +15,15 @@ COUNTRIES_FIRST = ["US"]
 
 
 class CropModel(models.Model):
-    id = models.PositiveIntegerField("Crop ID", primary_key=True)
+    id = models.UUIDField("Crop ID", primary_key=True)
     name = models.CharField("Name", max_length=64)
     abs_low = models.SmallIntegerField("Absolute Low Temperature")
     abs_high = models.SmallIntegerField("Absolute High Temperature")
     opt_low = models.SmallIntegerField("Optimal Low Temperature")
     opt_high = models.SmallIntegerField("Optimal High Temperature")
+
+    def __str__(self) -> str:
+        return f"\n\n{self.name}\n{self.id}\n\n"
 
 
 class Crop(models.Model):

@@ -1,12 +1,10 @@
 from django.test import TestCase
-from at2p_app.domain.entities.place import Place, PlaceError
-from at2p_app.domain.value_objects.location import ZipCode
+from at2p_app.domain.entities.place import Place
 
 
 class PlaceTest(TestCase):
     def setUp(self) -> None:
-        self.zip = ZipCode.new("22407")
-        self.place = Place.new(self.zip)
+        self.place = Place.new("22407", "US")
         return super().setUp()
 
     def test_create_place(self) -> None:
@@ -15,11 +13,3 @@ class PlaceTest(TestCase):
         self.assertEqual(self.place.__str__(), p_str)
         self.assertEqual(self.place.__repr__(), p_str)
         return
-
-    def test_validation(self) -> None:
-        bad_value = 12
-        self.assertRaises(PlaceError, Place.new, zip_code=bad_value)
-        bad_value = "GR"
-        self.assertRaises(
-            PlaceError, Place.new, zip_code=self.zip, country=bad_value
-        )

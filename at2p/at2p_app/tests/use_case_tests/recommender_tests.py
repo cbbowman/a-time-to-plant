@@ -1,17 +1,21 @@
 from django.test import TestCase
+from at2p_app.domain.common.error import RecommenderError
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
-from at2p_app.domain.use_cases.recommending import CropRecommender
-from at2p_app.domain.value_objects.temperature import TempRange, Temperature
-from at2p_app.domain.entities.weather import Weather
-from at2p_app.domain.value_objects.recommendation import Recommendation
+from at2p_app.domain.use_cases.recommender import (
+    SimpleRecommender,
+    CropRecommender,
+)
 from at2p_app.domain.value_objects.location import ZipCode
+from at2p_app.domain.value_objects.recommendation import Recommendation
+from at2p_app.domain.value_objects.temperature import TempRange, Temperature
+from at2p_app.domain.value_objects.weather import Weather
 
 
 class CropRecommenderTests(TestCase):
     def setUp(self) -> None:
         self.zip = ZipCode.new("22407")
-        self.place = Place.new(zip_code=self.zip)
+        self.place = Place.new(self.zip)
 
         self.crop = Crop.new(
             name="Boberries",
@@ -19,16 +23,19 @@ class CropRecommenderTests(TestCase):
             opt_range=TempRange.new(65, 75),
         )
         self.weather = Weather.new(
-            location=self.place,
+            place_id=self.place.id,
             high=Temperature.new(79),
             low=Temperature.new(41),
             avg=Temperature.new(70),
         )
-        self.recommender = CropRecommender(weather=self.weather)
+        self.recommender = SimpleRecommender.new(self.weather)
         return super().setUp()
 
     def test_instantiation(self):
         self.assertIsInstance(self.recommender, CropRecommender)
+
+    def test_validation(self):
+        self.assertRaises(RecommenderError, SimpleRecommender.new, "weather")
 
     def test_recommendation(self):
         r = self.recommender.crop(self.crop)

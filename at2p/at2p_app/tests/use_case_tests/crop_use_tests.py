@@ -1,7 +1,8 @@
 from django.test import TestCase
+from at2p_app.domain.common.error import InterfaceError
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.value_objects.temperature import TempRange
-from at2p_app.adapters.repositories import TestingCropRepo
+from at2p_app.adapters.repositories.crop_repo import TestingCropRepo
 from at2p_app.domain.use_cases.crop_interface import CropInterface
 
 
@@ -16,7 +17,7 @@ class TestCropInterface(TestCase):
         self.crop_id = self.crop.id
 
         self.repo = TestingCropRepo()
-        self.interface = CropInterface(self.repo)
+        self.interface = CropInterface.new(self.repo)
         return super().setUp()
 
     def test_instantiation(self):
@@ -40,3 +41,6 @@ class TestCropInterface(TestCase):
         crops = self.interface.import_crops()
         for c in crops:
             self.assertIsInstance(c, Crop)
+
+    def test_validatoin(self):
+        self.assertRaises(InterfaceError, CropInterface.new, "not a repo")

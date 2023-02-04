@@ -1,7 +1,7 @@
 from django.test import TestCase
+from uuid import UUID
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
-from at2p_app.domain.value_objects.location import ZipCode
 from at2p_app.domain.value_objects.recommendation import Recommendation
 from at2p_app.domain.value_objects.temperature import TempRange, Temperature
 from at2p_app.domain.common.error import RecommendationError
@@ -9,8 +9,7 @@ from at2p_app.domain.common.error import RecommendationError
 
 class RecommendationTests(TestCase):
     def setUp(self) -> None:
-        self.zip = ZipCode.new("22407")
-        self.place = Place.new(zip_code=self.zip)
+        self.place = Place.new("22407")
 
         self.crop = Crop.new(
             name="Boberries",
@@ -19,16 +18,13 @@ class RecommendationTests(TestCase):
         )
 
         self.r = Recommendation.new(
-            self.place, self.crop, True, Temperature.new(40)
+            self.place.id, self.crop, True, Temperature.new(40)
         )
         return super().setUp()
 
     def test_instantiation(self):
         self.assertIsInstance(self.r, Recommendation)
-        r_str = (
-            f"{self.r.crop}; {self.r.recommended}; "
-            f"{self.r.margin}; {self.r.time_stamp}"
-        )
+        r_str = f"{self.place.id.int}; {self.crop}; {self.r.time_stamp}"
         self.assertEqual(self.r.__str__(), r_str)
         self.assertEqual(self.r.__repr__(), r_str)
 
@@ -46,7 +42,7 @@ class RecommendationTests(TestCase):
         self.assertRaises(
             RecommendationError,
             Recommendation.new,
-            self.place,
+            self.place.id,
             bad_value,
             True,
             Temperature.new(40),
@@ -55,7 +51,7 @@ class RecommendationTests(TestCase):
         self.assertRaises(
             RecommendationError,
             Recommendation.new,
-            self.place,
+            self.place.id,
             self.crop,
             bad_value,
             Temperature.new(40),
@@ -64,7 +60,7 @@ class RecommendationTests(TestCase):
         self.assertRaises(
             RecommendationError,
             Recommendation.new,
-            self.place,
+            self.place.id,
             self.crop,
             True,
             bad_value,
