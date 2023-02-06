@@ -80,11 +80,10 @@ WSGI_APPLICATION = "at2p.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": env("DATABASE_NAME"),
+        "NAME": BASE_DIR / env("DATABASE_NAME"),
         # 'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
