@@ -29,3 +29,7 @@ jobs:
     - name: Test with django
       run: |
         pipenv run python at2p/manage.py test at2p_app --pattern="*_tests.py" -v 2
+      env:
+        DATABASE_NAME: "db.sqlite3"
+        DB_ENGINE: "django.db.backends.sqlite3"
+        SECRET_KEY: "django-insecure-+j%e)km1k(dfbv8q28+(_awgrhgv!t78=ofa%8fj($xx=u80p("
