@@ -32,3 +32,5 @@ jobs:
         pipenv run python at2p/manage.py test at2p_app --pattern="*_tests.py" -v 2
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DB_ENGINE: ${{ vars.DB_ENGINE }}
+        DATABASE_NAME: ${{ vars.DATABASE_NAME }}
