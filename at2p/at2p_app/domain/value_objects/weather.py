@@ -45,3 +45,11 @@ class Weather(ValueObject):
     @classmethod
     def _clean(cls):
         return
+
+    def __str__(self) -> str:
+        id = f"ID: {self.place_id.__str__()}"
+        high = f"High: {self.high.__str__()}"
+        low = f"Low: {self.low.__str__()}"
+        avg = f"Average: {self.avg.__str__()}"
+        time_stamp = f"Time-stamp: {self.time_stamp.isoformat()}"
+        return f"\n{id}\n{high}\n{low}\n{avg}\n{time_stamp}\n"
