@@ -13,6 +13,7 @@ lxml = "~=4.9"
 django-countries = "~=7.5"
 wheel = "~=0.38"
 setuptools = "~=66.1"
+django-environ = "*"
 
 [dev-packages]
 selenium = "~=4.7"
