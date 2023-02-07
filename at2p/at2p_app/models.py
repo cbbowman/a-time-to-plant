@@ -160,9 +160,14 @@ class TimeToPlant(models.Model):
         sl = max(max(soil - oh, 0), max(ol - soil, 0)) / (oh - ol)
         score = round(exp(-max(chill, cook, sl)), 2)
 
+        too_cold = low < mn
+        too_hot = high > mx
+        hit_opt = (high > ol) and (low < oh)
+        extreme_ok = (not too_cold) and (not too_hot)
+
         self.chill = chill
         self.cook = cook
         self.soil = sl
         self.plantable_score = score
-        self.plantable = score == 1.00
+        self.plantable = hit_opt and extreme_ok
         self.save()
