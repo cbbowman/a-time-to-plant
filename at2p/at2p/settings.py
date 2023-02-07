@@ -23,13 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = str(os.environ['SECRET_KEY'])
+SECRET_KEY = str(os.environ['DJANGO_SECRET_KEY'])
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = strtobool(os.environ['DJANGO_DEBUG'])
 
 # ALLOWED_HOSTS = os.environ['DJANGO_ALLOWED_HOSTS']
-ALLOWED_HOSTS = ['157.230.84.7', 'localhost']
+ALLOWED_HOSTS = ['157.230.84.7', 'localhost', 'timetoplant.net']
 
 
 # Application definition
@@ -74,24 +74,30 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = os.environ['WSGI_APPLICATION']
+WSGI_APPLICATION = 'at2p.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'NAME': os.environ['DB_NAME'],
-        'ENGINE': os.environ['DB_ENGINE'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'NAME': 'garden_site',
+            'ENGINE': 'django.db.backends.postgresql',
+            'USER': 'garden_user',
+            'PASSWORD': os.environ['DJANGO_DB_PASSWORD'],
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
 
 
 # Password validation
