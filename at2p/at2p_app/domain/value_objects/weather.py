@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
+
 from at2p_app.domain.common.base import ValueObject
 from at2p_app.domain.common.error import WeatherError
 from at2p_app.domain.value_objects.temperature import Temperature

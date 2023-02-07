@@ -1,14 +1,15 @@
+import re
+from abc import ABC, abstractclassmethod, abstractmethod
+from dataclasses import dataclass
+
 import numpy as np
 import requests
-import re
-from abc import ABC, abstractmethod, abstractclassmethod
-from bs4 import BeautifulSoup
-from dataclasses import dataclass
-from django.core.exceptions import ValidationError
 from at2p_app.domain.common.error import WeatherError
-from at2p_app.domain.value_objects.weather import Weather
-from at2p_app.domain.value_objects.temperature import Temperature
 from at2p_app.domain.entities.place import Place
+from at2p_app.domain.value_objects.temperature import Temperature
+from at2p_app.domain.value_objects.weather import Weather
+from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
 
 
 class WeatherSource(ABC):

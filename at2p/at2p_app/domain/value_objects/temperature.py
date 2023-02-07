@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, auto
+
 from at2p_app.domain.common.base import ValueObject
 from at2p_app.domain.common.error import TemperatureError
 

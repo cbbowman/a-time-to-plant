@@ -1,7 +1,8 @@
 import csv
-from uuid import UUID
 from dataclasses import dataclass
-from at2p_app.adapters.repositories.crop_repo import CropRepo, Crop, TempRange
+from uuid import UUID
+
+from at2p_app.adapters.repositories.crop_repo import Crop, CropRepo, TempRange
 from at2p_app.domain.common.error import InterfaceError
 
 CROP_LIST_CSV = "at2p/at2p_app/static/crops_and_temps.csv"

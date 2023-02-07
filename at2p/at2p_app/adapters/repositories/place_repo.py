@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+
 from at2p_app.domain.common.error import PlaceRepoError
-from at2p_app.domain.entities.place import Place, ZipCode, Country
+from at2p_app.domain.entities.place import Country, Place, ZipCode
 from at2p_app.models import PlaceModel
 
 

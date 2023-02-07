@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from uuid import uuid4, UUID
-from at2p_app.domain.value_objects.location import ZipCode, Country
+from uuid import UUID, uuid4
+
+from at2p_app.domain.value_objects.location import Country, ZipCode
 from at2p_app.domain.value_objects.weather import Weather
 
 
