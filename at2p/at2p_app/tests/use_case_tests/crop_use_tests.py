@@ -1,4 +1,4 @@
-from django.test import TestCase
+from unittest import TestCase
 from at2p_app.domain.common.error import InterfaceError
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.value_objects.temperature import TempRange

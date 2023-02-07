@@ -1,5 +1,5 @@
-from django.test import TestCase
-from django.core.exceptions import ValidationError
+from unittest import TestCase
+# from django.core.exceptions import ValidationError
 import at2p_app.scrape as s
 
 
