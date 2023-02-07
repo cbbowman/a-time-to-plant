@@ -31,6 +31,8 @@ jobs:
       run: |
         pipenv run python at2p/manage.py test at2p_app --pattern="*_tests.py" -v 2
       env:
+        DJANGO_DEBUG: ${{ vars.DJANGO_DEBUG }}
+        WSGI_APPLICATION: ${{ vars.WSGI_APPLICATION }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DATABASE_NAME: ${{ vars.DATABASE_NAME }}
         DB_ENGINE: ${{ vars.DB_ENGINE }}
