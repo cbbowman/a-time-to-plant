@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from at2p_app.data_source.weather_source import WeatherSource, Weather, Place
+
+from at2p_app.data_source.weather_source import Place, Weather, WeatherSource
 from at2p_app.domain.common.error import WeatherError
 
 

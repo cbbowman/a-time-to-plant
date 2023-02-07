@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from uuid import uuid4
+
 from at2p_app.domain.common.error import PlanterError
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place

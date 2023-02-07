@@ -1,5 +1,6 @@
 from abc import ABC, abstractclassmethod, abstractmethod
 from dataclasses import dataclass
+
 from at2p_app.domain.common.error import RecommenderError
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.value_objects.recommendation import Recommendation

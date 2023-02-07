@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from uuid import uuid4, UUID
-from at2p_app.domain.value_objects.temperature import TempRange
+from uuid import UUID, uuid4
+
 from at2p_app.domain.common.error import CropError
+from at2p_app.domain.value_objects.temperature import TempRange
 
 
 @dataclass(eq=True)

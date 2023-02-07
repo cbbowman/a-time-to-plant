@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from at2p_app.domain.common.error import CropRepoError
 from at2p_app.domain.entities.crop import Crop, CropName, TempRange
 from at2p_app.models import CropModel

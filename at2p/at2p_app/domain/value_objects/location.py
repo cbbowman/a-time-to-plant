@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from at2p_app.domain.common.base import ValueObject
 from at2p_app.domain.common.error import CountryError, ZipCodeError
 

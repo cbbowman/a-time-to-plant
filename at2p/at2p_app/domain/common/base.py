@@ -1,6 +1,5 @@
+from abc import ABC, abstractclassmethod
 from dataclasses import dataclass
-from abc import abstractclassmethod
-from abc import ABC
 
 
 @dataclass(frozen=True, eq=True)
