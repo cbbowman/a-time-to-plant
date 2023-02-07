@@ -28,7 +28,7 @@ SECRET_KEY = str(os.environ['SECRET_KEY'])
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = strtobool(os.environ['DJANGO_DEBUG'])
 
-ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOSTS']]
+ALLOWED_HOSTS = os.environ['DJANGO_ALLOWED_HOSTS']
 
 
 # Application definition
