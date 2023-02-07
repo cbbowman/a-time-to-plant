@@ -34,7 +34,7 @@ jobs:
         DJANGO_DEBUG: ${{ vars.DJANGO_DEBUG }}
         WSGI_APPLICATION: ${{ vars.WSGI_APPLICATION }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+        DATABASE_NAME: ${{ vars.DB_NAME }}
         DB_ENGINE: ${{ vars.DB_ENGINE }}
         DB_USER: ${{ vars.DB_USER }}
         DB_PASSWORD: ${{ vars.DB_PASSWORD }}
