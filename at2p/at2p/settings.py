@@ -81,7 +81,7 @@ WSGI_APPLICATION = os.environ['WSGI_APPLICATION']
 
 DATABASES = {
     'default': {
-        'DATABASE_NAME': os.environ['DB_NAME'],
+        'NAME': os.environ['DB_NAME'],
         'ENGINE': os.environ['DB_ENGINE'],
         'USER': os.environ['DB_USER'],
         'PASSWORD': os.environ['DB_PASSWORD'],
