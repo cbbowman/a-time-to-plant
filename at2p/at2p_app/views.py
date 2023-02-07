@@ -15,6 +15,8 @@ from django.views import generic
 from .forms import NewPlanterForm, ProfileForm, NewCropForm
 from .models import TimeToPlant, Crop, Planter, WeatherInfo
 
+from django.contrib.auth.decorators import user_passes_test
+
 
 class CropView(generic.DetailView):
     model = Crop
@@ -40,12 +42,12 @@ class CropDelete(generic.DeleteView):
 
 
 class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
-
     def setup(self, request, *args: Any, **kwargs: Any) -> None:
         print(request.method)
         if request.method == 'POST':
-            with open('at2p_app/static/crops_and_temps.csv',
-                      encoding='UTF-8') as f:
+            with open(
+                'at2p_app/static/crops_and_temps.csv', encoding='UTF-8'
+            ) as f:
                 reader = csv.reader(f)
                 for row in reader:
                     created = Crop.objects.get_or_create(
@@ -54,13 +56,13 @@ class ImportCrops(generic.base.RedirectView, UserPassesTestMixin):
                         min_opt_temp=row[2],
                         max_opt_temp=row[3],
                         max_temp=row[4],
-                        slug=slugify(row[0])
+                        slug=slugify(row[0]),
                     )
         return super().setup(request, *args, **kwargs)
 
     def test_func(self):
-        # return self.request.user.username == 'charlie'
-        return True
+        return self.request.user.username == 'charlie'
+        # return True
 
     def get_redirect_url(self, *args: Any, **kwargs: Any) -> Optional[str]:
         return reverse_lazy('home')
@@ -78,12 +80,13 @@ class Profile(generic.DetailView, LoginRequiredMixin):
         if planter.zip is None:
             return context
 
-        if not WeatherInfo.objects.filter(country=planter.country,
-                                          zip=planter.zip).exists():
+        if not WeatherInfo.objects.filter(
+            country=planter.country, zip=planter.zip
+        ).exists():
             WeatherInfo.objects.create(
-                country=planter.country, zip=planter.zip)
-        w = WeatherInfo.objects.get(
-            country=planter.country, zip=planter.zip)
+                country=planter.country, zip=planter.zip
+            )
+        w = WeatherInfo.objects.get(country=planter.country, zip=planter.zip)
         w.clean()
         w.update_weather()
 
