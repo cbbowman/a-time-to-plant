@@ -1,4 +1,4 @@
-from django.test import TestCase
+from unittest import TestCase
 from at2p_app.data_source.weather_source import WeatherScraper
 from at2p_app.domain.entities.place import Place
 from at2p_app.domain.value_objects.weather import Weather

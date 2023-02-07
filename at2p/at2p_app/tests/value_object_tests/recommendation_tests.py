@@ -1,5 +1,4 @@
-from django.test import TestCase
-from uuid import UUID
+from unittest import TestCase
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.entities.place import Place
 from at2p_app.domain.value_objects.recommendation import Recommendation
