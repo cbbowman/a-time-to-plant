@@ -1,3 +1,13 @@
+"""
+..  module:: recommendation
+    :platform: Unix, Windows
+    :synopsis: Module containing value object classes related to
+        crop recommendations
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID

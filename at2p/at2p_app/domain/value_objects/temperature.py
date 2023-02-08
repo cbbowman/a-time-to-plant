@@ -1,3 +1,13 @@
+"""
+..  module:: temperature
+    :platform: Unix, Windows
+    :synopsis: Module containing value object classes related to
+        temperature
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -6,18 +16,38 @@ from at2p_app.domain.common.error import TemperatureError
 
 
 class TempScale(Enum):
+    """_summary_
+
+    Arguments:
+        Enum -- Temperature scale class
+
+    Returns:
+        TempScale object
+    """
+
     F = auto()
     C = auto()
 
     def __str__(self):
+        """__str__ method for TempScale object
+
+        Returns:
+            string: degree symbol and F or C
+        """
         return f"\u00B0{self.name}"
 
     def __repr__(self):
+        """__repr__ method for TempScale object
+
+        Returns:
+            string: degree symbol and F or C
+        """
         return self.__str__()
 
 
 @dataclass(eq=True, order=True, frozen=True)
 class Temperature(ValueObject):
+
     temp: int
     scale: TempScale
 

@@ -1,3 +1,12 @@
+"""
+..  module:: location
+    :platform: Unix, Windows
+    :synopsis: Module contains value objects classes related to location
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
 
 from at2p_app.domain.common.base import ValueObject

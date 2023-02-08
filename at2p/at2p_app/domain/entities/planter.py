@@ -1,5 +1,14 @@
+"""
+..  module:: planter
+    :platform: Unix, Windows
+    :synopsis: Module contains Planter entity class and related classes
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from at2p_app.domain.common.error import PlanterError
 from at2p_app.domain.entities.crop import Crop
@@ -8,7 +17,7 @@ from at2p_app.domain.entities.place import Place
 
 @dataclass
 class Planter:
-    id: int
+    id: UUID
     username: str
     location: Place
     crops: list
@@ -16,7 +25,7 @@ class Planter:
     @classmethod
     def new(cls, username: str, location: Place):
         username, location = cls._validate(username, location)
-        return cls(uuid4().int, username, location, [])
+        return cls(uuid4(), username, location, [])
 
     @classmethod
     def _validate(cls, username, location):
@@ -37,7 +46,7 @@ class Planter:
             raise PlanterError(error_msg)
 
     def __str__(self) -> str:
-        return f"{self.username} ({self.id})"
+        return f"{self.username} ({self.id.int})"
 
     def __repr__(self) -> str:
         return self.__str__()

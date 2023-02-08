@@ -1,3 +1,12 @@
+"""
+..  module:: crop
+    :platform: Unix, Windows
+    :synopsis: Module contains Crop entity class and related classes
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 

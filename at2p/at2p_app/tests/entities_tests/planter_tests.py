@@ -1,4 +1,5 @@
 from unittest import TestCase
+from uuid import UUID
 from at2p_app.domain.entities.place import Place
 from at2p_app.domain.entities.crop import Crop
 from at2p_app.domain.value_objects.location import ZipCode
@@ -19,15 +20,15 @@ class TestPlanter(TestCase):
         self.assertIsInstance(self.planter, Planter)
         self.assertEqual(self.planter.username, self.username)
         self.assertEqual(self.planter.location, self.location)
-        self.assertIsInstance(self.planter.id, int)
+        self.assertIsInstance(self.planter.id, UUID)
         self.assertIsInstance(self.planter.crops, list)
 
     def test_str_repr(self):
         self.assertEqual(
-            self.planter.__str__(), f"{self.planter.username} ({self.planter.id})"
+            self.planter.__str__(), f"{self.planter.username} ({self.planter.id.int})"
         )
         self.assertEqual(
-            self.planter.__repr__(), f"{self.planter.username} ({self.planter.id})"
+            self.planter.__repr__(), f"{self.planter.username} ({self.planter.id.int})"
         )
 
     def test_validation_username(self):
