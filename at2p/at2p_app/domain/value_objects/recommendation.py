@@ -38,6 +38,12 @@ class Recommendation(ValueObject):
 
     @classmethod
     def new(
+        cls,
+        place_id: UUID,
+        crop: Crop,
+        recommended: bool,
+        margin: Temperature,
+    ):
         """Create a new Recommendation object
 
         Accepts all the attributes except for the timestamp. All
@@ -46,16 +52,10 @@ class Recommendation(ValueObject):
 
         Args:
             place_id: a UUID for a Place entity
-            crop: a Crop entity 
+            crop: a Crop entity
             recommended:
             margin:
         """
-        cls,
-        place_id: UUID,
-        crop: Crop,
-        recommended: bool,
-        margin: Temperature,
-    ):
         place_id, crop, recommended, margin = cls._validate(
             place_id, crop, recommended, margin
         )
@@ -64,6 +64,18 @@ class Recommendation(ValueObject):
 
     @classmethod
     def _validate(
+        """Validate a Recommendation object
+
+        Accepts all the attributes except for the timestamp. All
+        attributes are validated and cleaned. A timestamp is
+        generated the class __init__ method is called.
+
+        Args:
+            place_id: a UUID for a Place entity
+            crop: a Crop entity
+            recommended:
+            margin:
+        """
         cls,
         place_id: UUID,
         crop: Crop,
