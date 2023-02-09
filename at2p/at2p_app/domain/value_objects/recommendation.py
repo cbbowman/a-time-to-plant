@@ -29,7 +29,6 @@ class Recommendation(ValueObject):
         margin: a Temperature value; positive if weather is within
             the crops required temperature range; negative otherwise
     """
-
     place_id: UUID
     crop: Crop
     recommended: bool
@@ -52,9 +51,9 @@ class Recommendation(ValueObject):
 
         Args:
             place_id: a UUID for a Place entity
-            crop: a Crop entity
-            recommended:
-            margin:
+            crop: a Crop entity object
+            recommended: a boolean value
+            margin: the total degrees outside the optimal range
         """
         place_id, crop, recommended, margin = cls._validate(
             place_id, crop, recommended, margin
@@ -64,6 +63,12 @@ class Recommendation(ValueObject):
 
     @classmethod
     def _validate(
+        cls,
+        place_id: UUID,
+        crop: Crop,
+        recommended: bool,
+        margin: Temperature,
+    ):
         """Validate a Recommendation object
 
         Accepts all the attributes except for the timestamp. All
@@ -73,15 +78,9 @@ class Recommendation(ValueObject):
         Args:
             place_id: a UUID for a Place entity
             crop: a Crop entity
-            recommended:
-            margin:
+            recommended: a boolean value
+            margin: the total degrees outside the optimal range
         """
-        cls,
-        place_id: UUID,
-        crop: Crop,
-        recommended: bool,
-        margin: Temperature,
-    ):
         if not isinstance(place_id, UUID):
             error_msg = "Place_id must be a UUID!"
             raise RecommendationError(error_msg=error_msg)

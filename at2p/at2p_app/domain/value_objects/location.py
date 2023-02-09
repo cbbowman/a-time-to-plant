@@ -3,8 +3,6 @@
 Classes:
     Country: Value object representing a country
     ZipCode: Value object representing a ZIP code
-
-
 """
 from dataclasses import dataclass
 
@@ -21,6 +19,10 @@ class Country(ValueObject):
 
     The name can be a long string. The code must be an upper case,
     two-character string
+
+    Attributes:
+        code: string
+        name: string
     """
     code: str
     name: str
@@ -53,7 +55,7 @@ class Country(ValueObject):
             code: str
 
         Returns:
-        two strings, 'code' and 'name'
+            two strings, 'code' and 'name'
 
         Raises:
             CountryError: if code is not a string or an unsupported country
@@ -77,7 +79,7 @@ class Country(ValueObject):
         Strips off white space, and converts the code to uppercase.
 
         Arguments:
-            code: str
+            code: string
 
         Returns:
             string 'code'
@@ -108,7 +110,7 @@ class ZipCode(ValueObject):
         returns a ZipCode object.
 
         Arguments:
-            zip: str
+            zip: string
 
         Returns:
             ZipCode object

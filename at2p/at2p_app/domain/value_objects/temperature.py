@@ -5,7 +5,6 @@ Classes:
     Temperature : Value object representing a temperature
     TempRange : Value object representing a temperature range
 """
-
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -23,7 +22,6 @@ class TempScale(Enum):
         F: Value representing Farenheit
         C: Value representing Celsius
     """
-
     F = auto()
     C = auto()
 
@@ -60,12 +58,40 @@ class Temperature(ValueObject):
 
     @classmethod
     def new(cls, temp: int | float, scale: TempScale = TempScale.F):
+        """Create a new Temperature value object
+
+        Takes an int or float, and a TempScale, validates and cleans,
+        then returns a Temperature value object.
+
+        Arguments:
+            temp: an int or float
+            scale: a TempScale
+
+        Returns:
+            Temperature value object
+        """
         cls._validate(temp, scale)
         temp = cls._clean(temp)
         return cls(temp, scale)
 
     @classmethod
     def _validate(cls, temp: int | float, scale: TempScale):
+        """Validate arguments for a new Temperature object
+
+        Checks if the temp is an int or float, and checks if the scale
+        is a TempScale object.
+
+        Arguments:
+            temp: submitted temperature value
+            scale: submitted temperature scale
+
+        Returns:
+            None
+
+        Raises:
+            TemperatureError: if temp is not an int or float, or if
+                scale is not a TempScale object
+        """
         if not isinstance(temp, int | float):
             raise TemperatureError()
         if not isinstance(scale, TempScale):
@@ -73,6 +99,16 @@ class Temperature(ValueObject):
 
     @classmethod
     def _clean(cls, temp):
+        """Cleans number argument for a new Temperature object
+
+        Value is rounded to a whole number and cast as an integer.
+
+        Arguments:
+            temp: submitted temperature value
+
+        Returns:
+           An integer
+        """
         return int(round(temp))
 
     def __str__(self) -> str:
@@ -90,6 +126,16 @@ class Temperature(ValueObject):
 
 @dataclass(frozen=True, eq=True)
 class TempRange(ValueObject):
+    """Value object representing a temperature range
+
+    Two Temperature objects, 'min' and 'max' and the TempScale value
+    of the two temperatures.
+
+    Attributes:
+        min: a Temperature
+        max: a Temperature
+        scale: the TempScale value of min and max
+    """
     min: Temperature
     max: Temperature
     scale: TempScale
@@ -101,12 +147,42 @@ class TempRange(ValueObject):
         max: int | float,
         scale: TempScale = TempScale.F,
     ):
+        """Create a new TempRange object
+
+        Accepts two numbers and a scale (defaults to F) and returns a
+        TempRange object.
+
+        Arguments:
+            min: int or float
+            max: int or float
+            scale: a TempScale, default to F
+
+        Returns:
+            a TempRange object
+        """
         cls._validate(min, max, scale)
         min, max = cls._clean(min, max, scale)
         return cls(min, max, scale)
 
     @classmethod
     def _validate(cls, min: int | float, max: int | float, scale: TempScale):
+        """Validate arguments for a new TempRange object
+
+        Checks if min and max are numbers, and checks if scale is a
+        TempScale object.
+
+        Arguments:
+            min: int or float
+            max: int or float
+            scale: a TempScale
+
+        Returns:
+            a TempRange object
+
+        Raises:
+            TemperatureError if min or max are not int or float, or if
+            scale is not a TempScale object
+        """
         if not isinstance(min, int | float):
             raise TemperatureError()
         if not isinstance(max, int | float):
@@ -116,6 +192,19 @@ class TempRange(ValueObject):
 
     @classmethod
     def _clean(cls, min, max, scale):
+        """Cleans arguments for a new TempRange object
+
+        Creates two Temperature objects for the min and max of the
+        TempRange object.
+
+        Arguments:
+            min: int or float
+            max: int or float
+            scale: a TempScale object
+
+        Returns:
+            two Temperature objects, min and max
+        """
         min = Temperature.new(min, scale)
         max = Temperature.new(max, scale)
         return min, max
