@@ -22,13 +22,14 @@
                 <header>
                     <tr>
                         <th rowspan="2">Crop</th>
-                        <th colspan="3">Temperature</th>
+                        <th colspan="4">Temperature</th>
                         <!-- <th colspan="4">Plantable</th> -->
                     </tr>
                     <tr>
                         <th scope="col">Min</th>
                         <th scope="col">Best</th>
                         <th scope="col">Max</th>
+                        <th scope="col">Margin</th>
                         <!-- <th scope="col">Chill</th>
                         <th scope="col">Cook</th>
                         <th scope="col">Soil</th>
@@ -48,6 +49,7 @@
                             <td>{{ planting.crop.min_temp }}</td>
                             <td>{{ planting.crop.min_opt_temp }} - {{ planting.crop.max_opt_temp }}</td>
                             <td>{{ planting.crop.max_temp }}</td>
+                            <td>{{ planting.plantable_score|floatformat:0 }}</td>
                             <!-- <td>{{ planting.chill|floatformat:2 }}</td>
                             <td>{{ planting.cook|floatformat:2 }}</td>
                             <td>{{ planting.soil|floatformat:2 }}</td>

@@ -15,8 +15,6 @@ from django.views import generic
 from .forms import NewPlanterForm, ProfileForm, NewCropForm
 from .models import TimeToPlant, Crop, Planter, WeatherInfo
 
-from django.contrib.auth.decorators import user_passes_test
-
 
 class CropView(generic.DetailView):
     model = Crop
@@ -97,7 +95,7 @@ class Profile(generic.DetailView, LoginRequiredMixin):
         context['soil'] = w.historic_avg_temp
         context['high'] = w.forecast_high_temp
         context['low'] = w.forecast_low_temp
-        context['plantings'] = plantings.order_by('-plantable_score')
+        context['plantings'] = plantings.order_by('plantable_score')
         return context
 
     def get_object(self) -> Planter:
