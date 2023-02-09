@@ -1,11 +1,9 @@
-"""
-..  module:: temperature
-    :platform: Unix, Windows
-    :synopsis: Module containing value object classes related to
-        temperature
+"""ValueObject classes related to temperatures
 
-..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
-
+Classes:
+    TempScale : Enum class for Farenheit or Celsius
+    Temperature : Value object representing a temperature
+    TempRange : Value object representing a temperature range
 """
 
 from dataclasses import dataclass
@@ -16,13 +14,14 @@ from at2p_app.domain.common.error import TemperatureError
 
 
 class TempScale(Enum):
-    """_summary_
+    """Enum class for Farenheit or Celsius scales
 
-    Arguments:
-        Enum -- Temperature scale class
+    Used in the Temperature value object to represent which temperature
+    scale the value is using.
 
-    Returns:
-        TempScale object
+    Attributes:
+        F: Value representing Farenheit
+        C: Value representing Celsius
     """
 
     F = auto()
@@ -47,7 +46,15 @@ class TempScale(Enum):
 
 @dataclass(eq=True, order=True, frozen=True)
 class Temperature(ValueObject):
+    """Value object representing a temperature value
 
+    Uses an int to represent the degrees, and a TempScale object to
+    represent the scale (Farenheit or Celsius)
+
+    Attributes:
+        temp: an int
+        scale: a TempScale
+    """
     temp: int
     scale: TempScale
 

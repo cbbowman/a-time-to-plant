@@ -1,11 +1,7 @@
-"""
-..  module:: recommendation
-    :platform: Unix, Windows
-    :synopsis: Module containing value object classes related to
-        crop recommendations
+"""ValueObject classes related to recommendations
 
-..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
-
+Classes:
+    Recommendation: Value object representing a crop recommendation
 """
 
 from dataclasses import dataclass
@@ -20,6 +16,20 @@ from at2p_app.domain.value_objects.temperature import Temperature
 
 @dataclass(frozen=True)
 class Recommendation(ValueObject):
+    """A timestamped recommendation to plant a crop
+
+    Uses current weather info to provide a boolean recommendation to
+    plant a particular crop at a place. The recommendation includes
+    a timestamp of when it was generated.
+
+    Attributes:
+        place_id: the UUID for the relevant place
+        crop: the type of crop being evaluated
+        recommended: a boolean value
+        margin: a Temperature value; positive if weather is within
+            the crops required temperature range; negative otherwise
+    """
+
     place_id: UUID
     crop: Crop
     recommended: bool
@@ -28,6 +38,18 @@ class Recommendation(ValueObject):
 
     @classmethod
     def new(
+        """Create a new Recommendation object
+
+        Accepts all the attributes except for the timestamp. All
+        attributes are validated and cleaned. A timestamp is
+        generated the class __init__ method is called.
+
+        Args:
+            place_id: a UUID for a Place entity
+            crop: a Crop entity 
+            recommended:
+            margin:
+        """
         cls,
         place_id: UUID,
         crop: Crop,

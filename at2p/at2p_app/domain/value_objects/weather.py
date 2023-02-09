@@ -1,11 +1,7 @@
-"""
-..  module:: weather
-    :platform: Unix, Windows
-    :synopsis: Module containing value object classes related to
-        weather reports
+"""Value object classes related to weather
 
-..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
-
+Classes:
+    Weather: Value object representing a weather report
 """
 
 from dataclasses import dataclass
