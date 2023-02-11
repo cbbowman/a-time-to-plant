@@ -5,9 +5,9 @@ from dataclasses import dataclass
 @dataclass(frozen=True, eq=True)
 class ValueObject(ABC):
     @abstractclassmethod
-    def new(cls, *args, **kwargs):
+    def new(cls):
         pass
 
     @abstractclassmethod
-    def _validate(cls, *args, **kwargs):
+    def _validate(cls):
         pass

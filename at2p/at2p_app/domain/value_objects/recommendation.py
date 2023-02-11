@@ -3,7 +3,6 @@
 Classes:
     Recommendation: Value object representing a crop recommendation
 """
-
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
@@ -29,6 +28,7 @@ class Recommendation(ValueObject):
         margin: a Temperature value; positive if weather is within
             the crops required temperature range; negative otherwise
     """
+
     place_id: UUID
     crop: Crop
     recommended: bool
@@ -84,6 +84,7 @@ class Recommendation(ValueObject):
         if not isinstance(place_id, UUID):
             error_msg = "Place_id must be a UUID!"
             raise RecommendationError(error_msg=error_msg)
+
         if not isinstance(crop, Crop):
             error_msg = "Crop must be a Crop!"
             raise RecommendationError(error_msg=error_msg)

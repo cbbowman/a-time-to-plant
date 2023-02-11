@@ -65,7 +65,7 @@ class Country(ValueObject):
             raise CountryError(code=code, error_msg=error_msg)
 
         code = cls._clean(code=code)
-        if not (code in COUNTRIES.keys()):
+        if code not in COUNTRIES:
             error_msg = "Country code {code} is currently unsupported."
             raise CountryError(code=code, error_msg=error_msg)
 

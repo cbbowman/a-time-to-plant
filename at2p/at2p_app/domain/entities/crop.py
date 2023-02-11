@@ -1,12 +1,9 @@
+"""ValueObject classes related to recommendations
+
+Classes:
+    CropName: an object for a the names of Crop objects
+    Crop: an entity object representing a type of crop
 """
-..  module:: crop
-    :platform: Unix, Windows
-    :synopsis: Module contains Crop entity class and related classes
-
-..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
-
-"""
-
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 

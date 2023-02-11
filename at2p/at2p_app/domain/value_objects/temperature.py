@@ -22,6 +22,7 @@ class TempScale(Enum):
         F: Value representing Farenheit
         C: Value representing Celsius
     """
+
     F = auto()
     C = auto()
 
@@ -53,6 +54,7 @@ class Temperature(ValueObject):
         temp: an int
         scale: a TempScale
     """
+
     temp: int
     scale: TempScale
 
@@ -136,6 +138,7 @@ class TempRange(ValueObject):
         max: a Temperature
         scale: the TempScale value of min and max
     """
+
     min: Temperature
     max: Temperature
     scale: TempScale
@@ -216,11 +219,41 @@ class TempRange(ValueObject):
         return self.__str__()
 
     def includes_temp(self, t: Temperature):
+        """Checks if a temperature is within the range
+
+        First checks if 't' is a Temperature object, then returns a
+        bool, False if the Temp is outside the TempRange, True otherwise.
+
+        Arguments:
+            t: Temperature object
+
+        Returns:
+            a boolean value
+
+        Raise:
+            TemperatureError if t is not a Temperature object
+
+        """
         if not isinstance(t, Temperature):
             raise TemperatureError()
         return self.min < t and t < self.max
 
     def includes_range(self, r):
+        """Checks if a TemperatureRange object is within the range
+
+        First checks if 'r' is a TempRange object, then returns a
+        bool, False if the TempRange is outside the range, True
+        otherwise.
+
+        Arguments:
+            r: TempRange object
+
+        Returns:
+            a boolean value
+
+        Raises:
+            TemperatureError if t is not a TempRange object
+        """
         if not isinstance(r, TempRange):
             raise TemperatureError()
         return not (r.max > self.max or self.min > r.min)
