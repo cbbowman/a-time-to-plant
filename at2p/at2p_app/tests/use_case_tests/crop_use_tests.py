@@ -42,5 +42,5 @@ class TestCropInterface(TestCase):
         for c in crops:
             self.assertIsInstance(c, Crop)
 
-    def test_validatoin(self):
+    def test_validation(self):
         self.assertRaises(InterfaceError, CropInterface.new, "not a repo")

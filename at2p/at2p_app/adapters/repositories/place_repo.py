@@ -23,6 +23,25 @@ class PlaceRepo(ABC):
         pass
 
 
+class TestingPlaceRepo(PlaceRepo):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def create(self, zip_code, country="US"):
+        return Place.new(zip_code, country)
+
+    def get(self, place_id) -> Place:
+        p = Place.new("22407")
+        p.id = place_id
+        return p
+
+    def save(self, place: Place):
+        return
+
+    def delete(self, place: Place):
+        return
+
+
 class DjangoPlaceRepo(PlaceRepo):
     def create(self, zip_code, country="US") -> Place:
         place = Place.new(zip_code, country)
