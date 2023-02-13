@@ -1,3 +1,9 @@
+"""Value object classes related to weather
+
+Classes:
+    Weather: Value object representing a weather report
+"""
+
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
@@ -9,6 +15,18 @@ from at2p_app.domain.value_objects.temperature import Temperature
 
 @dataclass(frozen=True)
 class Weather(ValueObject):
+    """Value object representing a weather report
+
+    Includes a reference to the place of interest, the high, low,
+    and average temperatures, and a time-stamp.
+
+    Attributes:
+        place_id: the UUID of the relevant Place object
+        high: a Temperature object
+        low: a Temperature object
+        avg: a Temperature object
+        time_stamp: a datetime object
+    """
     place_id: UUID
     high: Temperature
     low: Temperature
@@ -17,14 +35,43 @@ class Weather(ValueObject):
 
     @classmethod
     def new(cls, place_id, high, low, avg):
+        """Create a new Weather value object
 
+        Takes a Place UUID, and three Temperature objects, validates and
+        cleans, then returns a Weather value object.
+
+        Arguments:
+            place_id: a UUID
+            high: a Temperature object
+            low: Temperature object
+            avg: Temperature object
+
+        Returns:
+            a Weather object
+        """
         place_id, high, low, avg = cls._validate(place_id, high, low, avg)
         cls._clean()
         return cls(place_id, high, low, avg, datetime.now())
 
     @classmethod
     def _validate(cls, place_id, high, low, avg):
+        """Create a new Weather value object
 
+        Takes a Place UUID, and three Temperature objects, validates
+        them, then returns them.
+
+        Arguments:
+            place_id: a UUID
+            high: a Temperature object
+            low: Temperature object
+            avg: Temperature object
+
+        Returns:
+            a Weather object
+
+        Raises:
+            a TemperatureError if the argument types are incorrect
+        """
         if not isinstance(place_id, UUID):
             error_msg = "place_id must be a UUID"
             raise WeatherError(error_msg)

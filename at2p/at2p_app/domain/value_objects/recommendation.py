@@ -1,3 +1,8 @@
+"""ValueObject classes related to recommendations
+
+Classes:
+    Recommendation: Value object representing a crop recommendation
+"""
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
@@ -10,6 +15,20 @@ from at2p_app.domain.value_objects.temperature import Temperature
 
 @dataclass(frozen=True)
 class Recommendation(ValueObject):
+    """A timestamped recommendation to plant a crop
+
+    Uses current weather info to provide a boolean recommendation to
+    plant a particular crop at a place. The recommendation includes
+    a timestamp of when it was generated.
+
+    Attributes:
+        place_id: the UUID for the relevant place
+        crop: the type of crop being evaluated
+        recommended: a boolean value
+        margin: a Temperature value; positive if weather is within
+            the crops required temperature range; negative otherwise
+    """
+
     place_id: UUID
     crop: Crop
     recommended: bool
@@ -24,6 +43,18 @@ class Recommendation(ValueObject):
         recommended: bool,
         margin: Temperature,
     ):
+        """Create a new Recommendation object
+
+        Accepts all the attributes except for the timestamp. All
+        attributes are validated and cleaned. A timestamp is
+        generated the class __init__ method is called.
+
+        Args:
+            place_id: a UUID for a Place entity
+            crop: a Crop entity object
+            recommended: a boolean value
+            margin: the total degrees outside the optimal range
+        """
         place_id, crop, recommended, margin = cls._validate(
             place_id, crop, recommended, margin
         )
@@ -38,9 +69,22 @@ class Recommendation(ValueObject):
         recommended: bool,
         margin: Temperature,
     ):
+        """Validate a Recommendation object
+
+        Accepts all the attributes except for the timestamp. All
+        attributes are validated and cleaned. A timestamp is
+        generated the class __init__ method is called.
+
+        Args:
+            place_id: a UUID for a Place entity
+            crop: a Crop entity
+            recommended: a boolean value
+            margin: the total degrees outside the optimal range
+        """
         if not isinstance(place_id, UUID):
             error_msg = "Place_id must be a UUID!"
             raise RecommendationError(error_msg=error_msg)
+
         if not isinstance(crop, Crop):
             error_msg = "Crop must be a Crop!"
             raise RecommendationError(error_msg=error_msg)

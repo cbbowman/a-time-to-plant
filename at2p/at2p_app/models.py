@@ -7,7 +7,7 @@ from .static import COUNTRIES_ONLY
 from .scrape import historic_temp, forecast_high_low
 import pgeocode
 from django.urls import reverse_lazy
-from math import exp
+#from math import exp
 
 
 COUNTRIES_ONLY = COUNTRIES_ONLY
@@ -155,10 +155,18 @@ class TimeToPlant(models.Model):
         high = w.forecast_high_temp
         soil = w.historic_avg_temp
 
+        def margin(t, upper=oh, lower=ol):
+            return max(t-upper, lower-t, 0)
+
+        high_margin = margin(high)
+        low_margin = margin(low)
+        soil_margin = margin(soil)
+
         chill = max((mn - low), 0) / max((ol - mn), 1)
         cook = max((high - mx), 0) / max((mx - oh), 1)
         sl = max(max(soil - oh, 0), max(ol - soil, 0)) / (oh - ol)
-        score = round(exp(-max(chill, cook, sl)), 2)
+#       score = round(exp(-max(chill, cook, sl)), 2)
+        score = high_margin + low_margin + soil_margin
 
         too_cold = low < mn
         too_hot = high > mx

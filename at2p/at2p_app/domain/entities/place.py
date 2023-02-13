@@ -1,3 +1,12 @@
+"""
+..  module:: place
+    :platform: Unix, Windows
+    :synopsis: Module contains Place entity class and related classes
+
+..  moduleauthor:: Charlie Bowman <charliebowman@protonmail.com>
+
+"""
+
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
@@ -10,7 +19,7 @@ class Place:
     id: UUID
     zip_code: ZipCode
     country: Country
-    weather_id: int
+    weather_id: UUID
 
     @classmethod
     def new(
