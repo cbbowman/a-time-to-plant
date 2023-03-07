@@ -24,6 +24,7 @@
 
   <p align="center">
     This is intended to be a service for getting localized, real-time, weather-driven recommendations for home garderners. This project is also being used as a long-term learning exercise.
+    <a href="http://timetoplant.net">http://timetoplant.net</a>
     <br />
     <a href="https://github.com/cbbowman/a-time-to-plant"><strong>Explore the docs »</strong></a>
     <br />
